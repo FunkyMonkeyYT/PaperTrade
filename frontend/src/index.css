@@ -1,0 +1,195 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Default Dark Mode: Black background, Green profit, Red losses, White/Grey text */
+    --bg-page: #000000;
+    --text-primary: #FFFFFF;
+    --text-secondary: #9CA3AF;
+    --text-muted: #6B7280;
+    --card-bg: #0C0D0E;
+    --subpanel-bg: #141517;
+    --border-color: rgba(38, 38, 38, 0.9);
+    --profit-color: #00D09C;
+    --profit-bg: rgba(0, 208, 156, 0.15);
+    --profit-border: rgba(0, 208, 156, 0.35);
+    --loss-color: #EB5B5B;
+    --loss-bg: rgba(235, 91, 91, 0.15);
+    --loss-border: rgba(235, 91, 91, 0.35);
+    --accent-blue: #2962FF;
+  }
+
+  .dark {
+    /* Dark Mode: Pure Black background, Green profit, Red losses, White/Grey text */
+    --bg-page: #000000;
+    --text-primary: #FFFFFF;
+    --text-secondary: #9CA3AF;
+    --text-muted: #6B7280;
+    --card-bg: #0C0D0E;
+    --subpanel-bg: #141517;
+    --border-color: rgba(38, 38, 38, 0.9);
+    --profit-color: #00D09C;
+    --profit-bg: rgba(0, 208, 156, 0.15);
+    --profit-border: rgba(0, 208, 156, 0.35);
+    --loss-color: #EB5B5B;
+    --loss-bg: rgba(235, 91, 91, 0.15);
+    --loss-border: rgba(235, 91, 91, 0.35);
+    --accent-blue: #2962FF;
+  }
+
+  .light {
+    /* Light Mode: White background, Green text, Blue profit, Red losses */
+    --bg-page: #FFFFFF;
+    --text-primary: #047857;
+    --text-secondary: #065F46;
+    --text-muted: #059669;
+    --card-bg: #FAFAFA;
+    --subpanel-bg: #F3F4F6;
+    --border-color: #E5E7EB;
+    --profit-color: #2563EB;
+    --profit-bg: rgba(37, 99, 235, 0.12);
+    --profit-border: rgba(37, 99, 235, 0.3);
+    --loss-color: #DC2626;
+    --loss-bg: rgba(220, 38, 38, 0.12);
+    --loss-border: rgba(220, 38, 38, 0.3);
+    --accent-blue: #2563EB;
+  }
+
+  html {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    font-size: 14px;
+    -webkit-text-size-adjust: 100%;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
+  }
+
+  @media (min-width: 640px) {
+    html {
+      font-size: 15px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    html {
+      font-size: 15px;
+    }
+  }
+
+  body {
+    @apply antialiased transition-colors duration-150 text-sm;
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
+    margin: 0;
+    padding: 0;
+  }
+}
+
+/* Institutional FinTech Cards & Containers */
+.fin-card,
+.tv-card {
+  @apply rounded-lg border transition-all duration-150;
+  background-color: var(--card-bg);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+.fin-subpanel,
+.tv-subpanel {
+  @apply rounded-md border;
+  background-color: var(--subpanel-bg);
+  border-color: var(--border-color);
+  color: var(--text-primary);
+}
+
+/* Theme Dynamic Profit & Loss Classes */
+.text-profit {
+  color: var(--profit-color) !important;
+}
+
+.text-loss {
+  color: var(--loss-color) !important;
+}
+
+.bg-profit-badge {
+  background-color: var(--profit-bg) !important;
+  color: var(--profit-color) !important;
+  border: 1px solid var(--profit-border) !important;
+}
+
+.bg-loss-badge {
+  background-color: var(--loss-bg) !important;
+  color: var(--loss-color) !important;
+  border: 1px solid var(--loss-border) !important;
+}
+
+/* Tabular Numeric Data */
+.font-mono-numbers,
+.tabular-nums {
+  font-family: 'JetBrains Mono', monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Skeleton Loading Pulse Shimmer */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(90deg, rgba(38, 38, 38, 0.5) 25%, rgba(60, 60, 60, 0.7) 50%, rgba(38, 38, 38, 0.5) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 6px;
+}
+
+.light .skeleton-shimmer {
+  background: linear-gradient(90deg, rgba(229, 231, 235, 0.8) 25%, rgba(209, 213, 219, 1) 50%, rgba(229, 231, 235, 0.8) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+/* Clean FinTech Scrollbars */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-page);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(75, 85, 99, 0.5);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-blue);
+}
+
+/* Focus Visible */
+*:focus-visible {
+  outline: 2px solid var(--accent-blue) !important;
+  outline-offset: 1px !important;
+}
