@@ -39,18 +39,21 @@ app = FastAPI(
 )
 
 # Configure CORS
-cors_origins_raw = os.getenv("CORS_ORIGINS", '["*"]')
-try:
-    cors_origins = json.loads(cors_origins_raw)
-except Exception:
-    cors_origins = ["*"]
+from fastapi.middleware.cors import CORSMiddleware
+
+# Define the origins that are allowed to make requests to your backend
+origins = [
+    "http://localhost:5173",  # Vite default local frontend port
+    "http://localhost:3000",  # React default local frontend port
+    "https://*.vercel.app",   # Any Vercel deployment preview
+]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=cors_origins if isinstance(cors_origins, list) else ["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=["*"],      # Allows all origins
+    allow_credentials=False,  # Set to False so wildcard origins don't crash
+    allow_methods=["*"],      # Allows all HTTP methods (GET, POST, PUT, DELETE, etc.)
+    allow_headers=["*"],      # Allows all HTTP headers
 )
 
 # Register Routers
