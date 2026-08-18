@@ -155,7 +155,7 @@ class RegisterRequest(BaseModel):
 class GoogleAuthRequest(BaseModel):
     google_id: str = Field(...)
     email: str = Field(...)
-    name: str = Field(...)
+    name: Optional[str] = None
     avatar_url: Optional[str] = None
     default_country: Optional[str] = "IN"
 
@@ -173,13 +173,6 @@ class EmailLoginRequest(BaseModel):
 class OnboardingRequest(BaseModel):
     country: str = Field("IN", description="Primary trading country: IN, US, GB, JP, EU, HK, CA, AU, CH, GLOBAL")
     currency: Optional[str] = None
-
-class GoogleAuthRequest(BaseModel):
-    google_id: str
-    email: str
-    name: Optional[str] = None
-    avatar_url: Optional[str] = None
-    default_country: Optional[str] = "US"
 
 class AvatarUpdateRequest(BaseModel):
     avatar_url: str

@@ -59,7 +59,7 @@ export default function AuthModal({ isOpen, onClose }) {
   useEffect(() => {
     if (!isOpen) return;
 
-    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '1088492040209-sampleclientid.apps.googleusercontent.com';
+    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '135710814133-o6cbe73e8v3l5en719sbpmku4i3qn6gi.apps.googleusercontent.com';
 
     const handleCredentialResponse = async (response) => {
       if (!response.credential) return;
@@ -87,16 +87,19 @@ export default function AuthModal({ isOpen, onClose }) {
       }
     };
 
-    if (window.google?.accounts?.id) {
-      try {
-        window.google.accounts.id.initialize({
-          client_id: clientId,
-          callback: handleCredentialResponse,
-          auto_select: false,
-          cancel_on_tap_outside: true,
-        });
+    let checkInterval = null;
+    let attempts = 0;
 
-        if (googleBtnContainerRef.current) {
+    const renderGis = () => {
+      if (window.google?.accounts?.id && googleBtnContainerRef.current) {
+        try {
+          window.google.accounts.id.initialize({
+            client_id: clientId,
+            callback: handleCredentialResponse,
+            auto_select: false,
+            cancel_on_tap_outside: true,
+          });
+
           window.google.accounts.id.renderButton(googleBtnContainerRef.current, {
             theme: 'filled_black',
             size: 'large',
@@ -105,11 +108,26 @@ export default function AuthModal({ isOpen, onClose }) {
             shape: 'rectangular',
             logo_alignment: 'left',
           });
+          return true;
+        } catch (e) {
+          console.warn('Google GIS button render notice:', e);
         }
-      } catch (e) {
-        console.warn('Google GIS button render notice:', e);
       }
+      return false;
+    };
+
+    if (!renderGis()) {
+      checkInterval = setInterval(() => {
+        attempts++;
+        if (renderGis() || attempts > 20) {
+          clearInterval(checkInterval);
+        }
+      }, 250);
     }
+
+    return () => {
+      if (checkInterval) clearInterval(checkInterval);
+    };
   }, [isOpen, selectedCountry, selectedAvatar]);
 
   if (!isOpen) return null;

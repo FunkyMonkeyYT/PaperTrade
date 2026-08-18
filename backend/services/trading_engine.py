@@ -135,7 +135,7 @@ class TradingEngine:
             return user
 
         # Create unique username from Google Name or Email
-        base_username = "".join(c for c in name if c.isalnum()) or clean_email.split("@")[0]
+        base_username = "".join(c for c in (name or "") if c.isalnum()) or clean_email.split("@")[0]
         if len(base_username) < 3:
             base_username = "trader_" + base_username
         
