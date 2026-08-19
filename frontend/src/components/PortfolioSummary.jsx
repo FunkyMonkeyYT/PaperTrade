@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { COUNTRIES } from '../constants/theme';
 
 export default function PortfolioSummary({ portfolio, onSelectTicker, onQuickSell, onOpenSearch }) {
-  const { formatCurrency, getCurrencySymbol, activeCountry, currentCountryObj, convertFx } = useAuth();
+  const { formatCurrency, getCurrencySymbol, getCurrencyFromTicker, activeCountry, currentCountryObj, convertFx } = useAuth();
   const [filterMode, setFilterMode] = useState('ALL'); // 'ALL' or 'ACTIVE_MARKET'
 
   if (!portfolio) return null;
@@ -213,8 +213,15 @@ export default function PortfolioSummary({ portfolio, onSelectTicker, onQuickSel
                 <tbody className="divide-y divide-slate-800/50 light:divide-slate-200">
                   {filteredPositions.map((pos) => {
                     const isPositive = pos.unrealized_pnl >= 0;
+                    const posTickerCurr = getCurrencyFromTicker(pos.ticker);
                     const sym = getCurrencySymbol(pos.ticker);
                     const tag = getExchangeTag(pos.ticker);
+
+                    const entryPrice = convertFx(pos.average_entry_price, portfolioCurrency, posTickerCurr);
+                    const currentPrice = convertFx(pos.current_price, portfolioCurrency, posTickerCurr);
+                    const marketVal = convertFx(pos.market_value, portfolioCurrency, posTickerCurr);
+                    const unrealizedPnl = convertFx(pos.unrealized_pnl, portfolioCurrency, posTickerCurr);
+
                     return (
                       <tr
                         key={pos.id}
@@ -234,19 +241,19 @@ export default function PortfolioSummary({ portfolio, onSelectTicker, onQuickSel
                           {pos.shares}
                         </td>
                         <td className="py-2.5 px-3 text-slate-400 light:text-slate-600 text-right tabular-nums">
-                          {sym}{pos.average_entry_price.toFixed(2)}
+                          {sym}{entryPrice.toFixed(2)}
                         </td>
                         <td className="py-2.5 px-3 font-bold text-white light:text-slate-900 text-right tabular-nums">
-                          {sym}{pos.current_price.toFixed(2)}
+                          {sym}{currentPrice.toFixed(2)}
                         </td>
                         <td className="py-2.5 px-3 font-bold text-slate-200 light:text-slate-800 text-right tabular-nums">
-                          {formatCurrency(pos.market_value, pos.ticker)}
+                          {sym}{marketVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </td>
                         <td className="py-2.5 px-3 text-right tabular-nums">
                           <div className={`font-bold inline-flex items-center gap-1 ${isPositive ? 'text-profit' : 'text-loss'}`}>
                             {isPositive ? <ArrowUpRight className="w-3.5 h-3.5" /> : <ArrowDownRight className="w-3.5 h-3.5" />}
-                            <span>{isPositive ? '+' : ''}{formatCurrency(pos.unrealized_pnl, pos.ticker)}</span>
-                            <span className="text-[11px]">({isPositive ? '+' : ''}{pos.unrealized_pnl_percent.toFixed(1)}%)</span>
+                            <span>{isPositive ? '+' : ''}{sym}{unrealizedPnl.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                            <span className="text-[11px]">({isPositive ? '+' : ''}{pos.unrealized_pnl_percent.toFixed(2)}%)</span>
                           </div>
                         </td>
                         <td className="py-2.5 px-3 text-slate-400 light:text-slate-600 text-right tabular-nums">

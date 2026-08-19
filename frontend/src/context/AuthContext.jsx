@@ -259,7 +259,7 @@ export function AuthProvider({ children }) {
     
     fetchMarketData(code);
 
-    if (countryObj && (token || username || email)) {
+    if (countryObj) {
       try {
         const newPortfolio = await stockApi.switchCurrency(countryObj.currency);
         return newPortfolio;

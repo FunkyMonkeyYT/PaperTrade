@@ -2,8 +2,8 @@ import React from 'react';
 import { History } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
-export default function TransactionHistory({ transactions = [] }) {
-  const { formatCurrency, getCurrencySymbol } = useAuth();
+export default function TransactionHistory({ transactions = [], portfolioCurrency = 'USD' }) {
+  const { formatCurrency, getCurrencySymbol, getCurrencyFromTicker, convertFx } = useAuth();
 
   return (
     <div className="rounded-lg border border-slate-800/80 bg-[#111827] shadow-sm overflow-hidden transition-colors">
@@ -41,7 +41,12 @@ export default function TransactionHistory({ transactions = [] }) {
               {transactions.map((tx) => {
                 const isBuy = tx.order_type === 'BUY';
                 const formattedTime = new Date(tx.timestamp).toLocaleString();
+                const txTickerCurr = getCurrencyFromTicker(tx.ticker);
                 const sym = getCurrencySymbol(tx.ticker);
+
+                const execPrice = convertFx(tx.execution_price, portfolioCurrency, txTickerCurr);
+                const totalVal = convertFx(tx.total_value, portfolioCurrency, txTickerCurr);
+                const realizedPnl = convertFx(tx.realized_pnl, portfolioCurrency, txTickerCurr);
 
                 return (
                   <tr key={tx.id} className="hover:bg-[#161B26]/60 transition-colors">
@@ -59,16 +64,16 @@ export default function TransactionHistory({ transactions = [] }) {
                     </td>
                     <td className="py-2.5 px-3 font-bold text-[#F9FAFB]">{tx.ticker}</td>
                     <td className="py-2.5 px-3 text-slate-300 text-right tabular-nums">{tx.shares}</td>
-                    <td className="py-2.5 px-3 text-slate-400 text-right tabular-nums">{sym}{tx.execution_price.toFixed(2)}</td>
+                    <td className="py-2.5 px-3 text-slate-400 text-right tabular-nums">{sym}{execPrice.toFixed(2)}</td>
                     <td className="py-2.5 px-3 font-bold text-slate-200 text-right tabular-nums">
-                      {formatCurrency(tx.total_value, tx.ticker)}
+                      {sym}{totalVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                     </td>
                     <td className="py-2.5 px-4 text-right font-bold tabular-nums">
                       {isBuy ? (
                         <span className="text-slate-500">-</span>
                       ) : (
                         <span className={tx.realized_pnl >= 0 ? 'text-[#00D09C]' : 'text-[#EB5B5B]'}>
-                          {tx.realized_pnl >= 0 ? '+' : ''}{formatCurrency(tx.realized_pnl, tx.ticker)}
+                          {tx.realized_pnl >= 0 ? '+' : ''}{sym}{realizedPnl.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </span>
                       )}
                     </td>

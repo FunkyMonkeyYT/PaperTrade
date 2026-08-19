@@ -256,7 +256,10 @@ export default function App() {
               onQuickSell={handleQuickSell}
               onOpenSearch={() => setIsSearchOpen(true)}
             />
-            <TransactionHistory transactions={transactions} />
+            <TransactionHistory
+              transactions={transactions}
+              portfolioCurrency={portfolio?.currency || 'USD'}
+            />
           </div>
         )}
 
