@@ -48,8 +48,8 @@ export default function App() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   // Fetch Stock Metrics
-  const fetchMetrics = useCallback(async (ticker, tf, refresh = false) => {
-    setLoadingMetrics(true);
+  const fetchMetrics = useCallback(async (ticker, tf, refresh = false, silent = false) => {
+    if (!silent) setLoadingMetrics(true);
     setMetricsError(null);
     try {
       const data = await stockApi.getMetrics(ticker, tf, refresh);
@@ -57,9 +57,9 @@ export default function App() {
     } catch (err) {
       console.error('Metrics fetch error:', err);
       const msg = err.response?.data?.detail || err.message || 'Failed to load stock analytics';
-      setMetricsError(msg);
+      if (!silent) setMetricsError(msg);
     } finally {
-      setLoadingMetrics(false);
+      if (!silent) setLoadingMetrics(false);
     }
   }, []);
 
@@ -85,6 +85,16 @@ export default function App() {
   useEffect(() => {
     fetchPortfolioData();
   }, [fetchPortfolioData]);
+
+  // Live real-time background polling interval (every 6 seconds)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetchMetrics(selectedTicker, timeframe, false, true);
+      fetchPortfolioData();
+    }, 6000);
+
+    return () => clearInterval(interval);
+  }, [selectedTicker, timeframe, fetchMetrics, fetchPortfolioData]);
 
   const handleSelectTicker = (ticker) => {
     setSelectedTicker(ticker.toUpperCase());

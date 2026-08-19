@@ -36,5 +36,5 @@ class ThreadSafeTTLCache:
         with self._lock:
             self._cache.clear()
 
-# Global market metrics cache (3 minutes)
-metrics_cache = ThreadSafeTTLCache(default_ttl_seconds=180)
+# Global market metrics cache (30 seconds for responsive real-time data)
+metrics_cache = ThreadSafeTTLCache(default_ttl_seconds=30)

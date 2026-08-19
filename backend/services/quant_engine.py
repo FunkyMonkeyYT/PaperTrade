@@ -587,6 +587,44 @@ class QuantEngine:
         """Returns internal curated universe metadata."""
         return cls.search_popular_tickers()
 
+    @classmethod
+    def get_live_price(cls, ticker: str) -> Tuple[float, str]:
+        """
+        Fetches live or latest market closing price and native currency for a ticker.
+        Reuses cached metrics if available, or fetches reliable 1y daily bars / 5d history fallback.
+        """
+        clean_ticker = ticker.strip().upper()
+        curr = cls.infer_currency_from_ticker(clean_ticker)
+
+        # 1. Check if metrics are already cached for this ticker across any timeframe
+        for tf in ["1y", "1d", "5d", "1m", "6m"]:
+            cached = metrics_cache.get(f"metrics:{clean_ticker}:{tf}")
+            if cached and hasattr(cached, "metrics") and cached.metrics.current_price:
+                c = cls.infer_currency_from_ticker(clean_ticker, cached.metrics.currency)
+                return cached.metrics.current_price, c
+
+        # 2. Call full metrics calculation (with 1y daily bars for stability)
+        try:
+            metrics_res = cls.get_stock_metrics(clean_ticker, timeframe="1y")
+            c = cls.infer_currency_from_ticker(clean_ticker, metrics_res.metrics.currency)
+            return metrics_res.metrics.current_price, c
+        except Exception as e:
+            logger.warning(f"get_stock_metrics fallback during get_live_price({clean_ticker}): {e}")
+
+        # 3. Direct lightweight history fallback
+        try:
+            stock = yf.Ticker(clean_ticker)
+            hist = stock.history(period="5d", interval="1d")
+            if not hist.empty:
+                if isinstance(hist.columns, pd.MultiIndex):
+                    hist.columns = hist.columns.get_level_values(0)
+                price = round(float(hist["Close"].iloc[-1]), 2)
+                return price, curr
+        except Exception as e:
+            logger.warning(f"Direct yf history fallback failed for {clean_ticker}: {e}")
+
+        return 0.0, curr
+
     MARKET_SCHEDULES = {
         "IN": {
             "name": "India",

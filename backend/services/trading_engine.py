@@ -314,9 +314,9 @@ class TradingEngine:
 
         # Fetch current execution price via QuantEngine
         try:
-            metrics_res = QuantEngine.get_stock_metrics(clean_ticker, timeframe="1d")
-            native_price = metrics_res.metrics.current_price
-            stock_currency = QuantEngine.infer_currency_from_ticker(clean_ticker, metrics_res.metrics.currency)
+            native_price, stock_currency = QuantEngine.get_live_price(clean_ticker)
+            if native_price <= 0:
+                raise ValueError("Price unavailable")
         except Exception as e:
             logger.error(f"Failed to fetch market price for {clean_ticker}: {e}")
             raise HTTPException(status_code=400, detail=f"Cannot execute order: Market data unavailable for '{clean_ticker}'.")
@@ -448,12 +448,14 @@ class TradingEngine:
                 continue
 
             try:
-                metrics_res = QuantEngine.get_stock_metrics(pos.ticker, timeframe="1d")
-                native_price = metrics_res.metrics.current_price
-                stock_curr = QuantEngine.infer_currency_from_ticker(pos.ticker, metrics_res.metrics.currency)
-                fx_factor = cls.get_fx_rate(stock_curr, portfolio_curr)
-                current_price = round(native_price * fx_factor, 2)
-            except Exception:
+                native_price, stock_curr = QuantEngine.get_live_price(pos.ticker)
+                if native_price > 0:
+                    fx_factor = cls.get_fx_rate(stock_curr, portfolio_curr)
+                    current_price = round(native_price * fx_factor, 2)
+                else:
+                    current_price = pos.average_entry_price
+            except Exception as e:
+                logger.warning(f"Error resolving live price for {pos.ticker}: {e}")
                 current_price = pos.average_entry_price
 
             mkt_val = round(pos.shares * current_price, 2)
