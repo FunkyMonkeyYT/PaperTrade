@@ -173,8 +173,20 @@ class QuantEngine:
         except Exception as e:
             logger.warning(f"Could not load metadata for {clean_ticker}: {e}")
 
-        company_name = info.get("shortName") or info.get("longName") or clean_ticker
-        sector = info.get("sector", "Equities")
+        # Check known curated universe for reliable fallback metadata
+        known_item = next((item for item in cls._get_known_universe() if item["ticker"].upper() == clean_ticker), None)
+
+        company_name = (
+            info.get("shortName")
+            or info.get("longName")
+            or (known_item["name"] if known_item else None)
+            or clean_ticker
+        )
+        sector = (
+            info.get("sector")
+            or (known_item["sector"] if known_item else None)
+            or "Equities"
+        )
         industry = info.get("industry", "Financial Asset")
         market_cap = info.get("marketCap")
         pe_ratio = info.get("trailingPE") or info.get("forwardPE")
@@ -183,8 +195,8 @@ class QuantEngine:
         fifty_two_week_low = float(info.get("fiftyTwoWeekLow") or hist["Low"].min())
         fifty_two_week_change = info.get("52WeekChange")
         avg_volume_10d = info.get("averageVolume10days")
-        currency = info.get("currency", "USD")
-        exchange = info.get("exchange", "NASDAQ/NYSE")
+        currency = cls.infer_currency_from_ticker(clean_ticker, info.get("currency"))
+        exchange = cls.infer_exchange_from_ticker(clean_ticker, info.get("exchange"))
 
         # Indicator values
         sma20_val = round(float(latest["SMA20"]) if pd.notna(latest["SMA20"]) else current_price, 2)
@@ -298,9 +310,11 @@ class QuantEngine:
             verdict = "Hold"
             confidence = 72
 
+        sym_map = {"INR": "₹", "USD": "$", "GBP": "£", "EUR": "€", "JPY": "¥", "HKD": "HK$", "CAD": "CA$", "AUD": "A$", "CHF": "CHF "}
+        curr_sym = sym_map.get(currency, "$")
         algo_summary = (
             f"Mathematical analysis indicates a {verdict.upper()} profile. Price is trading "
-            f"{'above' if current_price > sma20_val else 'below'} 20-day SMA (${sma20_val}) with 14-day RSI at {rsi14_val} "
+            f"{'above' if current_price > sma20_val else 'below'} 20-day SMA ({curr_sym}{sma20_val}) with 14-day RSI at {rsi14_val} "
             f"and Bollinger Band status '{bb_status}'. 30-day annualized volatility is {vol_30d}%."
         )
 
@@ -515,6 +529,63 @@ class QuantEngine:
         output = {"indices": results, "updated_at": datetime.utcnow().isoformat()}
         metrics_cache.set(cache_key, output)
         return output
+
+    @classmethod
+    def infer_currency_from_ticker(cls, ticker: str, info_currency: Optional[str] = None) -> str:
+        """Deterministically resolves native stock currency from international ticker suffix or metadata."""
+        t = (ticker or "").strip().upper()
+        if t.endswith(".NS") or t.endswith(".BO") or t.startswith("^BSE") or t.startswith("^NSE") or t in ("INR", "IN"):
+            return "INR"
+        if t.endswith(".T") or t == "^N225" or t in ("JPY", "JP"):
+            return "JPY"
+        if t.endswith(".L") or t == "^FTSE" or t in ("GBP", "GB"):
+            return "GBP"
+        if t.endswith(".DE") or t.endswith(".PA") or t.endswith(".AS") or t == "^GDAXI" or t in ("EUR", "EU"):
+            return "EUR"
+        if t.endswith(".HK") or t == "^HSI" or t in ("HKD", "HK"):
+            return "HKD"
+        if t.endswith(".TO") or t == "^GSPTSE" or t in ("CAD", "CA"):
+            return "CAD"
+        if t.endswith(".AX") or t == "^AXJO" or t in ("AUD", "AU"):
+            return "AUD"
+        if t.endswith(".SW") or t == "^SSMI" or t in ("CHF", "CH"):
+            return "CHF"
+        if t.endswith("-USD") or t in ("BTC-USD", "ETH-USD", "SOL-USD", "BNB-USD", "XRP-USD"):
+            return "USD"
+        if info_currency:
+            curr_str = str(info_currency).strip().upper()
+            if curr_str in ("USD", "INR", "GBP", "EUR", "JPY", "HKD", "CAD", "AUD", "CHF"):
+                return curr_str
+        return "USD"
+
+    @classmethod
+    def infer_exchange_from_ticker(cls, ticker: str, info_exchange: Optional[str] = None) -> str:
+        """Resolves readable international exchange name from ticker format."""
+        t = (ticker or "").strip().upper()
+        if t.endswith(".NS") or t.endswith(".BO") or t.startswith("^BSE") or t.startswith("^NSE"):
+            return "NSE / BSE"
+        if t.endswith(".T") or t == "^N225":
+            return "Tokyo Stock Exchange (TSE)"
+        if t.endswith(".L") or t == "^FTSE":
+            return "London Stock Exchange (LSE)"
+        if t.endswith(".DE") or t.endswith(".PA") or t.endswith(".AS") or t == "^GDAXI":
+            return "Euronext / DAX"
+        if t.endswith(".HK") or t == "^HSI":
+            return "Hong Kong Stock Exchange (HKEX)"
+        if t.endswith(".TO") or t == "^GSPTSE":
+            return "Toronto Stock Exchange (TSX)"
+        if t.endswith(".AX") or t == "^AXJO":
+            return "Australian Securities Exchange (ASX)"
+        if t.endswith(".SW") or t == "^SSMI":
+            return "SIX Swiss Exchange"
+        if t.endswith("-USD"):
+            return "Crypto 24/7"
+        return info_exchange or "NASDAQ/NYSE"
+
+    @classmethod
+    def _get_known_universe(cls) -> List[Dict[str, Any]]:
+        """Returns internal curated universe metadata."""
+        return cls.search_popular_tickers()
 
     MARKET_SCHEDULES = {
         "IN": {

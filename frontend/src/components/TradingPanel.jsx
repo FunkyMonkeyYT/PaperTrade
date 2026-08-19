@@ -10,7 +10,7 @@ export default function TradingPanel({
   portfolio,
   onOrderSuccess
 }) {
-  const { formatCurrency, getCurrencySymbol, currentCountryObj, convertFx, FX_RATES } = useAuth();
+  const { formatCurrency, getCurrencySymbol, getCurrencyFromTicker, currentCountryObj, convertFx, FX_RATES } = useAuth();
   const { success, error: toastError } = useToast();
   
   const [orderType, setOrderType] = useState('BUY'); // 'BUY' or 'SELL'
@@ -35,7 +35,7 @@ export default function TradingPanel({
   }, []);
 
   const activeCurrency = currentCountryObj.currency || 'USD';
-  const nativeCurrency = ticker.includes('.NS') ? 'INR' : (ticker.includes('.L') ? 'GBP' : (ticker.includes('.T') ? 'JPY' : (ticker.includes('.HK') ? 'HKD' : (ticker.includes('.TO') ? 'CAD' : (ticker.includes('.AX') ? 'AUD' : (ticker.includes('.SW') ? 'CHF' : 'USD'))))));
+  const nativeCurrency = getCurrencyFromTicker(ticker) || 'USD';
   
   // Calculate converted execution price in active portfolio currency
   const fxMultiplier = (FX_RATES[activeCurrency] || 1.0) / (FX_RATES[nativeCurrency] || 1.0);

@@ -1,5 +1,16 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { BarChart3, LineChart, Layers } from 'lucide-react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import {
+  BarChart3,
+  LineChart,
+  Layers,
+  Square,
+  Trash2,
+  RotateCcw,
+  Palette,
+  Check,
+  Info,
+  X
+} from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useTheme } from '../context/ThemeContext';
 
@@ -10,6 +21,14 @@ const TIMEFRAMES = [
   { label: '6M', value: '6m' },
   { label: '1Y', value: '1y' },
   { label: '5Y', value: '5y' },
+];
+
+export const DRAWING_PRESETS = [
+  { id: 'demand', label: 'Demand / Support', hex: '#00D09C', bg: 'rgba(0, 208, 156, 0.18)', border: '#00D09C' },
+  { id: 'supply', label: 'Supply / Resistance', hex: '#EB5B5B', bg: 'rgba(235, 91, 91, 0.18)', border: '#EB5B5B' },
+  { id: 'channel', label: 'Consolidation / Channel', hex: '#2962FF', bg: 'rgba(41, 98, 255, 0.18)', border: '#2962FF' },
+  { id: 'liquidity', label: 'Order Block / Liquidity', hex: '#F59E0B', bg: 'rgba(245, 158, 11, 0.18)', border: '#F59E0B' },
+  { id: 'target', label: 'Target / Breakout Zone', hex: '#8B5CF6', bg: 'rgba(139, 92, 246, 0.18)', border: '#8B5CF6' },
 ];
 
 export default function ChartContainer({
@@ -33,6 +52,45 @@ export default function ChartContainer({
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
+  // Drawing Tools State
+  const [isDrawMode, setIsDrawMode] = useState(false);
+  const [selectedPreset, setSelectedPreset] = useState(DRAWING_PRESETS[0]);
+  const [boxes, setBoxes] = useState([]);
+  const [selectedBoxId, setSelectedBoxId] = useState(null);
+  const [hoveredBoxId, setHoveredBoxId] = useState(null);
+  const [activeDrawBox, setActiveDrawBox] = useState(null);
+  const [showColorPicker, setShowColorPicker] = useState(false);
+
+  // Load persistent drawings per ticker from localStorage
+  useEffect(() => {
+    if (!ticker) return;
+    try {
+      const saved = localStorage.getItem(`papertrade_boxes_${ticker}`);
+      if (saved) {
+        setBoxes(JSON.parse(saved));
+      } else {
+        setBoxes([]);
+      }
+    } catch (e) {
+      console.warn('Failed to load chart drawings:', e);
+      setBoxes([]);
+    }
+    setSelectedBoxId(null);
+    setActiveDrawBox(null);
+  }, [ticker]);
+
+  // Save persistent drawings per ticker
+  const saveBoxes = useCallback((newBoxes) => {
+    setBoxes(newBoxes);
+    if (ticker) {
+      try {
+        localStorage.setItem(`papertrade_boxes_${ticker}`, JSON.stringify(newBoxes));
+      } catch (e) {
+        console.warn('Failed to save chart drawings:', e);
+      }
+    }
+  }, [ticker]);
+
   // Handle dynamic responsive resizing
   useEffect(() => {
     if (!containerRef.current) return;
@@ -45,7 +103,38 @@ export default function ChartContainer({
     return () => observer.disconnect();
   }, []);
 
-  // Render chart on canvas with exact theme colors
+  // Keyboard Shortcuts (Delete, Esc, Undo)
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+      if (e.key === 'Escape') {
+        if (activeDrawBox) {
+          setActiveDrawBox(null);
+        } else if (selectedBoxId) {
+          setSelectedBoxId(null);
+        } else if (isDrawMode) {
+          setIsDrawMode(false);
+        }
+      } else if (e.key === 'Delete' || e.key === 'Backspace') {
+        if (selectedBoxId) {
+          e.preventDefault();
+          saveBoxes(boxes.filter((b) => b.id !== selectedBoxId));
+          setSelectedBoxId(null);
+        }
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
+        if (boxes.length > 0) {
+          e.preventDefault();
+          saveBoxes(boxes.slice(0, -1));
+          setSelectedBoxId(null);
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedBoxId, activeDrawBox, isDrawMode, boxes, saveBoxes]);
+
+  // Render chart and interactive squares on canvas
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas || !candles || candles.length === 0) return;
@@ -287,7 +376,129 @@ export default function ChartContainer({
       ctx.stroke();
     }
 
-    // 7. Time / Date Ticks on X-Axis
+    // 7. Draw Saved Squares / Boxes (Trading Zones)
+    boxes.forEach((box) => {
+      let sIdx = box.startIdx;
+      let eIdx = box.endIdx;
+      if (box.startTime) {
+        const foundS = candles.findIndex((c) => c.time === box.startTime);
+        if (foundS !== -1) sIdx = foundS;
+      }
+      if (box.endTime) {
+        const foundE = candles.findIndex((c) => c.time === box.endTime);
+        if (foundE !== -1) eIdx = foundE;
+      }
+      sIdx = Math.max(0, Math.min(candles.length - 1, sIdx ?? 0));
+      eIdx = Math.max(0, Math.min(candles.length - 1, eIdx ?? candles.length - 1));
+
+      const xLeft = getX(Math.min(sIdx, eIdx));
+      const xRight = getX(Math.max(sIdx, eIdx));
+      const yTop = getY(Math.max(box.priceTop, box.priceBottom));
+      const yBottom = getY(Math.min(box.priceTop, box.priceBottom));
+
+      const bWidth = Math.max(xRight - xLeft, 12);
+      const bHeight = Math.max(yBottom - yTop, 6);
+
+      const isSelected = selectedBoxId === box.id;
+      const isHovered = hoveredBoxId === box.id;
+
+      // Filled zone
+      ctx.fillStyle = box.bg || `${box.color}2e`;
+      ctx.fillRect(xLeft, yTop, bWidth, bHeight);
+
+      // Border outline
+      ctx.strokeStyle = box.border || box.color;
+      ctx.lineWidth = isSelected ? 2 : (isHovered ? 1.8 : 1.2);
+      if (isSelected) {
+        ctx.setLineDash([4, 2]);
+      } else {
+        ctx.setLineDash([]);
+      }
+      ctx.strokeRect(xLeft, yTop, bWidth, bHeight);
+      ctx.setLineDash([]);
+
+      // Corner handles if selected
+      if (isSelected) {
+        const handleSize = 6;
+        ctx.fillStyle = '#FFFFFF';
+        ctx.strokeStyle = box.color;
+        ctx.lineWidth = 1.5;
+        [
+          [xLeft, yTop],
+          [xLeft + bWidth, yTop],
+          [xLeft, yTop + bHeight],
+          [xLeft + bWidth, yTop + bHeight]
+        ].forEach(([hx, hy]) => {
+          ctx.fillRect(hx - handleSize / 2, hy - handleSize / 2, handleSize, handleSize);
+          ctx.strokeRect(hx - handleSize / 2, hy - handleSize / 2, handleSize, handleSize);
+        });
+      }
+
+      // Zone Tag / Price Range
+      const minP = Math.min(box.priceTop, box.priceBottom);
+      const maxP = Math.max(box.priceTop, box.priceBottom);
+      const delta = maxP - minP;
+      const pctDiff = ((delta / (minP || 1)) * 100).toFixed(1);
+      const tagText = `${box.label ? box.label + ': ' : ''}${currencySymbol}${minP.toFixed(2)} - ${currencySymbol}${maxP.toFixed(2)} (Δ ${pctDiff}%)`;
+
+      ctx.font = 'bold 9px "JetBrains Mono", monospace';
+      const textWidth = ctx.measureText(tagText).width;
+      const badgeY = Math.max(padding.top + 2, yTop - 15);
+      
+      ctx.fillStyle = isDark ? 'rgba(12, 13, 14, 0.9)' : 'rgba(255, 255, 255, 0.95)';
+      ctx.fillRect(xLeft, badgeY, textWidth + 8, 14);
+      ctx.strokeStyle = box.color;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(xLeft, badgeY, textWidth + 8, 14);
+
+      ctx.fillStyle = box.color;
+      ctx.textAlign = 'left';
+      ctx.fillText(tagText, xLeft + 4, badgeY + 10);
+    });
+
+    // 8. Draw Active Live Preview Box (While Dragging)
+    if (activeDrawBox) {
+      const { startX, startY, currentX, currentY, startPrice, currentPrice } = activeDrawBox;
+      const xMin = Math.min(startX, currentX);
+      const xMax = Math.max(startX, currentX);
+      const yMin = Math.min(startY, currentY);
+      const yMax = Math.max(startY, currentY);
+      const w = Math.max(xMax - xMin, 6);
+      const h = Math.max(yMax - yMin, 4);
+
+      // Translucent fill
+      ctx.fillStyle = selectedPreset.bg;
+      ctx.fillRect(xMin, yMin, w, h);
+
+      // Live animated dashed border
+      ctx.strokeStyle = selectedPreset.border;
+      ctx.lineWidth = 1.6;
+      ctx.setLineDash([4, 4]);
+      ctx.strokeRect(xMin, yMin, w, h);
+      ctx.setLineDash([]);
+
+      // Live price delta tag
+      const pTop = Math.max(startPrice, currentPrice);
+      const pBottom = Math.min(startPrice, currentPrice);
+      const delta = pTop - pBottom;
+      const deltaPct = ((delta / (pBottom || 1)) * 100).toFixed(2);
+      const liveTag = `${selectedPreset.label}: ${currencySymbol}${pBottom.toFixed(2)} – ${currencySymbol}${pTop.toFixed(2)} (Δ ${currencySymbol}${delta.toFixed(2)} / ${deltaPct}%)`;
+
+      ctx.font = 'bold 10px "JetBrains Mono", monospace';
+      const tWidth = ctx.measureText(liveTag).width;
+      const bY = Math.max(padding.top + 2, yMin - 18);
+
+      ctx.fillStyle = isDark ? '#141517' : '#FFFFFF';
+      ctx.fillRect(xMin, bY, tWidth + 10, 16);
+      ctx.strokeStyle = selectedPreset.hex;
+      ctx.lineWidth = 1.2;
+      ctx.strokeRect(xMin, bY, tWidth + 10, 16);
+      ctx.fillStyle = selectedPreset.hex;
+      ctx.textAlign = 'left';
+      ctx.fillText(liveTag, xMin + 5, bY + 12);
+    }
+
+    // 9. Time / Date Ticks on X-Axis
     const numXTicks = isMobile ? 3 : 6;
     const step = Math.floor(candles.length / numXTicks);
     ctx.fillStyle = TEXT_COLOR;
@@ -300,13 +511,13 @@ export default function ChartContainer({
       ctx.fillText(dateStr, x, height - padding.bottom + 16);
     }
 
-    // 8. Crosshair and hover marker
-    if (hoveredIndex !== null && hoveredIndex >= 0 && hoveredIndex < candles.length) {
+    // 10. Crosshair and hover marker (when not drawing actively)
+    if (!activeDrawBox && hoveredIndex !== null && hoveredIndex >= 0 && hoveredIndex < candles.length) {
       const hX = getX(hoveredIndex);
       const hCandle = candles[hoveredIndex];
       const hY = getY(hCandle.close);
 
-      ctx.strokeStyle = 'rgba(148, 163, 184, 0.4)';
+      ctx.strokeStyle = isDrawMode ? selectedPreset.hex : 'rgba(148, 163, 184, 0.4)';
       ctx.lineWidth = 1;
       ctx.setLineDash([4, 4]);
 
@@ -324,7 +535,7 @@ export default function ChartContainer({
       ctx.setLineDash([]);
 
       // Price badge on right axis
-      ctx.fillStyle = '#2962FF';
+      ctx.fillStyle = isDrawMode ? selectedPreset.hex : '#2962FF';
       ctx.fillRect(width - padding.right, hY - 9, padding.right, 18);
       ctx.fillStyle = '#FFFFFF';
       ctx.font = '10px "JetBrains Mono", monospace';
@@ -332,36 +543,191 @@ export default function ChartContainer({
       ctx.fillText(`${currencySymbol}${hCandle.close.toFixed(2)}`, width - padding.right + 4, hY + 4);
     }
 
-  }, [candles, timeframe, chartType, showSMA20, showSMA50, showBollinger, hoveredIndex, dimensions, isDark]);
+  }, [
+    candles,
+    timeframe,
+    chartType,
+    showSMA20,
+    showSMA50,
+    showBollinger,
+    hoveredIndex,
+    dimensions,
+    isDark,
+    boxes,
+    selectedBoxId,
+    hoveredBoxId,
+    activeDrawBox,
+    isDrawMode,
+    selectedPreset,
+    currencySymbol
+  ]);
 
-  const handleMouseMove = (e) => {
+  // Coordinate Conversion Helpers
+  const getCoordinatesFromEvent = (e) => {
     const canvas = canvasRef.current;
-    if (!canvas || !candles || candles.length === 0) return;
+    if (!canvas || !candles || candles.length === 0) return null;
 
     const rect = canvas.getBoundingClientRect();
     const isMobile = rect.width < 540;
     const padding = { top: 12, right: isMobile ? 55 : 75, bottom: isMobile ? 28 : 36, left: isMobile ? 6 : 10 };
+    const chartHeight = rect.height - padding.top - padding.bottom;
+    const volumeHeight = isMobile ? 24 : 35;
+    const priceHeight = chartHeight - volumeHeight - (isMobile ? 6 : 12);
     const chartWidth = rect.width - padding.left - padding.right;
 
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const clientX = e.touches && e.touches[0] ? e.touches[0].clientX : (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientX : e.clientX);
+    const clientY = e.touches && e.touches[0] ? e.touches[0].clientY : (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientY : e.clientY);
 
-    const mouseX = clientX - rect.left;
-    const mouseY = clientY - rect.top;
+    const mouseX = Math.max(padding.left, Math.min(rect.width - padding.right, clientX - rect.left));
+    const mouseY = Math.max(padding.top, Math.min(padding.top + priceHeight, clientY - rect.top));
 
-    setMousePos({ x: mouseX, y: mouseY });
+    // Calculate Price Range
+    let minPrice = Infinity;
+    let maxPrice = -Infinity;
+    candles.forEach((c) => {
+      if (c.low < minPrice) minPrice = c.low;
+      if (c.high > maxPrice) maxPrice = c.high;
+      if (showBollinger && c.bb_lower && c.bb_lower < minPrice) minPrice = c.bb_lower;
+      if (showBollinger && c.bb_upper && c.bb_upper > maxPrice) maxPrice = c.bb_upper;
+    });
+    const priceBuffer = (maxPrice - minPrice) * 0.05 || 1;
+    minPrice -= priceBuffer;
+    maxPrice += priceBuffer;
+    const priceRange = maxPrice - minPrice || 1;
 
-    if (mouseX >= padding.left && mouseX <= rect.width - padding.right) {
-      const ratio = (mouseX - padding.left) / chartWidth;
-      const idx = Math.round(ratio * (candles.length - 1));
-      if (idx >= 0 && idx < candles.length) {
-        setHoveredIndex(idx);
+    const price = minPrice + ((padding.top + priceHeight - mouseY) / priceHeight) * priceRange;
+    const ratio = (mouseX - padding.left) / chartWidth;
+    const idx = Math.max(0, Math.min(candles.length - 1, Math.round(ratio * (candles.length - 1))));
+
+    return { mouseX, mouseY, price, idx, time: candles[idx]?.time || '' };
+  };
+
+  const handleMouseDown = (e) => {
+    const coords = getCoordinatesFromEvent(e);
+    if (!coords) return;
+
+    if (isDrawMode) {
+      setActiveDrawBox({
+        startX: coords.mouseX,
+        startY: coords.mouseY,
+        currentX: coords.mouseX,
+        currentY: coords.mouseY,
+        startPrice: coords.price,
+        currentPrice: coords.price,
+        startIdx: coords.idx,
+        currentIdx: coords.idx,
+        startTime: coords.time,
+        currentTime: coords.time
+      });
+      setSelectedBoxId(null);
+    } else {
+      // Check if clicking inside an existing box to select it
+      const clicked = [...boxes].reverse().find((b) => {
+        const minP = Math.min(b.priceTop, b.priceBottom);
+        const maxP = Math.max(b.priceTop, b.priceBottom);
+        const minIdx = Math.min(b.startIdx, b.endIdx);
+        const maxIdx = Math.max(b.startIdx, b.endIdx);
+        return coords.price >= minP && coords.price <= maxP && coords.idx >= minIdx && coords.idx <= maxIdx;
+      });
+      setSelectedBoxId(clicked ? clicked.id : null);
+    }
+  };
+
+  const handleMouseMove = (e) => {
+    const coords = getCoordinatesFromEvent(e);
+    if (!coords) return;
+
+    setMousePos({ x: coords.mouseX, y: coords.mouseY });
+
+    if (isDrawMode && activeDrawBox) {
+      setActiveDrawBox((prev) => ({
+        ...prev,
+        currentX: coords.mouseX,
+        currentY: coords.mouseY,
+        currentPrice: coords.price,
+        currentIdx: coords.idx,
+        currentTime: coords.time
+      }));
+    } else {
+      setHoveredIndex(coords.idx);
+
+      // Check hover on boxes
+      const hovered = [...boxes].reverse().find((b) => {
+        const minP = Math.min(b.priceTop, b.priceBottom);
+        const maxP = Math.max(b.priceTop, b.priceBottom);
+        const minIdx = Math.min(b.startIdx, b.endIdx);
+        const maxIdx = Math.max(b.startIdx, b.endIdx);
+        return coords.price >= minP && coords.price <= maxP && coords.idx >= minIdx && coords.idx <= maxIdx;
+      });
+      setHoveredBoxId(hovered ? hovered.id : null);
+    }
+  };
+
+  const handleMouseUp = (e) => {
+    if (isDrawMode && activeDrawBox) {
+      const coords = getCoordinatesFromEvent(e) || activeDrawBox;
+      const priceTop = Math.max(activeDrawBox.startPrice, coords.price);
+      const priceBottom = Math.min(activeDrawBox.startPrice, coords.price);
+      const startIdx = Math.min(activeDrawBox.startIdx, coords.idx);
+      const endIdx = Math.max(activeDrawBox.startIdx, coords.idx);
+
+      const pixelDist = Math.hypot(
+        coords.mouseX - activeDrawBox.startX,
+        coords.mouseY - activeDrawBox.startY
+      );
+
+      // Only save if drawn rectangle has meaningful size (at least 6px)
+      if (pixelDist > 6) {
+        const newBox = {
+          id: 'box_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+          priceTop: Math.round(priceTop * 100) / 100,
+          priceBottom: Math.round(priceBottom * 100) / 100,
+          startTime: candles[startIdx]?.time || activeDrawBox.startTime,
+          endTime: candles[endIdx]?.time || coords.time,
+          startIdx,
+          endIdx,
+          color: selectedPreset.hex,
+          border: selectedPreset.border,
+          bg: selectedPreset.bg,
+          label: selectedPreset.label,
+          createdAt: new Date().toISOString()
+        };
+
+        const updated = [...boxes, newBox];
+        saveBoxes(updated);
+        setSelectedBoxId(newBox.id);
       }
+
+      setActiveDrawBox(null);
     }
   };
 
   const handleMouseLeave = () => {
     setHoveredIndex(null);
+    setHoveredBoxId(null);
+    if (activeDrawBox) {
+      setActiveDrawBox(null);
+    }
+  };
+
+  const handleDeleteSelected = () => {
+    if (selectedBoxId) {
+      saveBoxes(boxes.filter((b) => b.id !== selectedBoxId));
+      setSelectedBoxId(null);
+    }
+  };
+
+  const handleClearAll = () => {
+    saveBoxes([]);
+    setSelectedBoxId(null);
+    setActiveDrawBox(null);
+  };
+
+  const handleUndo = () => {
+    if (boxes.length > 0) {
+      saveBoxes(boxes.slice(0, -1));
+      setSelectedBoxId(null);
+    }
   };
 
   const activeCandle = hoveredIndex !== null && candles[hoveredIndex] ? candles[hoveredIndex] : candles[candles.length - 1];
@@ -369,7 +735,7 @@ export default function ChartContainer({
   return (
     <div className="p-4 sm:p-5 rounded-lg border border-slate-800 light:border-slate-200 bg-[#0C0D0E] light:bg-white shadow-sm flex flex-col gap-3 transition-colors">
       
-      {/* Chart Toolbar */}
+      {/* 1. Main Chart Toolbar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2.5 border-b border-slate-800/80 light:border-slate-200">
         
         {/* Timeframe Buttons */}
@@ -389,7 +755,7 @@ export default function ChartContainer({
           ))}
         </div>
 
-        {/* Chart Type & Indicator Toggles */}
+        {/* Chart Type, Indicators & Drawing Tool Controls */}
         <div className="flex items-center gap-1.5 flex-wrap">
           
           {/* Chart Type Toggle */}
@@ -454,42 +820,159 @@ export default function ChartContainer({
             <span className="w-1.5 h-1.5 rounded-full bg-[#2962FF]" />
             Bollinger (20,2)
           </button>
+
+          {/* Square / Box Drawing Tool Button */}
+          <button
+            onClick={() => setIsDrawMode(!isDrawMode)}
+            title="Draw Rectangle / Support & Resistance Zones (Click & Drag)"
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-xs font-mono font-bold transition-all cursor-pointer shadow-sm ${
+              isDrawMode
+                ? 'bg-[#2962FF] text-white border-[#2962FF] ring-2 ring-[#2962FF]/40'
+                : 'bg-[#141517] light:bg-slate-100 text-slate-300 light:text-slate-700 border-slate-700/80 light:border-slate-300 hover:border-[#2962FF]'
+            }`}
+          >
+            <Square className="w-3.5 h-3.5" />
+            <span>Draw Square</span>
+            {boxes.length > 0 && (
+              <span className={`text-[10px] px-1 rounded font-mono ${isDrawMode ? 'bg-white/20 text-white' : 'bg-slate-800 text-slate-300'}`}>
+                {boxes.length}
+              </span>
+            )}
+          </button>
         </div>
 
       </div>
 
-      {/* Floating Tooltip Header */}
-      {activeCandle && (
-        <div className="flex items-center gap-3 flex-wrap text-xs font-mono bg-[#141517] light:bg-slate-100 px-3 py-1.5 rounded-md border border-slate-800 light:border-slate-300 text-slate-300 light:text-slate-800">
-          <span className="text-slate-400 light:text-slate-500 font-semibold">{activeCandle.time}</span>
-          <div>O: <span className="text-white light:text-slate-900 font-bold tabular-nums">{currencySymbol}{activeCandle.open?.toFixed(2)}</span></div>
-          <div>H: <span className="text-white light:text-slate-900 font-bold tabular-nums">{currencySymbol}{activeCandle.high?.toFixed(2)}</span></div>
-          <div>L: <span className="text-white light:text-slate-900 font-bold tabular-nums">{currencySymbol}{activeCandle.low?.toFixed(2)}</span></div>
-          <div>
-            C:{' '}
-            <span
-              className={`font-bold tabular-nums ${
-                activeCandle.close >= activeCandle.open ? 'text-profit' : 'text-loss'
-              }`}
-            >
-              {currencySymbol}{activeCandle.close?.toFixed(2)}
+      {/* 2. Drawing Sub-Toolbar (When Draw Mode is Active or Drawings Exist) */}
+      {(isDrawMode || boxes.length > 0) && (
+        <div className="flex items-center justify-between gap-2 p-2 rounded-md bg-[#141517] light:bg-slate-100 border border-slate-800 light:border-slate-300 flex-wrap text-xs font-mono">
+          
+          <div className="flex items-center gap-2 flex-wrap">
+            <span className="text-[11px] uppercase font-bold text-slate-400 light:text-slate-600 flex items-center gap-1">
+              <Square className="w-3 h-3 text-[#2962FF]" />
+              <span>Zone Type:</span>
             </span>
+
+            {/* Color & Zone Type Pills */}
+            <div className="flex items-center gap-1 flex-wrap">
+              {DRAWING_PRESETS.map((p) => (
+                <button
+                  key={p.id}
+                  onClick={() => {
+                    setSelectedPreset(p);
+                    if (!isDrawMode) setIsDrawMode(true);
+                  }}
+                  className={`px-2 py-0.5 rounded text-[11px] font-bold font-mono transition-all flex items-center gap-1.5 cursor-pointer border ${
+                    selectedPreset.id === p.id && isDrawMode
+                      ? 'border-white text-white shadow-sm'
+                      : 'border-transparent text-slate-400 hover:text-slate-200'
+                  }`}
+                  style={{
+                    backgroundColor: selectedPreset.id === p.id && isDrawMode ? p.hex : 'transparent'
+                  }}
+                >
+                  <span className="w-2 h-2 rounded-full" style={{ backgroundColor: p.hex }} />
+                  <span>{p.label.split(' ')[0]}</span>
+                </button>
+              ))}
+            </div>
           </div>
-          <div>Vol: <span className="text-slate-400 light:text-slate-500 font-semibold tabular-nums">{activeCandle.volume?.toLocaleString()}</span></div>
+
+          {/* Action buttons (Undo, Delete Selected, Clear All) */}
+          <div className="flex items-center gap-1.5">
+            {selectedBoxId && (
+              <button
+                onClick={handleDeleteSelected}
+                className="px-2 py-0.5 rounded bg-red-500/15 hover:bg-red-500/25 text-red-400 border border-red-500/30 text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                title="Delete Selected Square (Delete Key)"
+              >
+                <Trash2 className="w-3 h-3" />
+                <span>Delete Box</span>
+              </button>
+            )}
+
+            {boxes.length > 0 && (
+              <>
+                <button
+                  onClick={handleUndo}
+                  className="px-2 py-0.5 rounded bg-[#161B26] hover:bg-slate-800 text-slate-300 border border-slate-700 text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                  title="Undo Last Square (Ctrl+Z)"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                  <span>Undo</span>
+                </button>
+                <button
+                  onClick={handleClearAll}
+                  className="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-red-400 text-[11px] font-bold transition-colors cursor-pointer"
+                  title="Clear all drawn zones on this chart"
+                >
+                  Clear ({boxes.length})
+                </button>
+              </>
+            )}
+
+            {isDrawMode && (
+              <button
+                onClick={() => setIsDrawMode(false)}
+                className="p-1 rounded text-slate-400 hover:text-white transition-colors cursor-pointer"
+                title="Exit Draw Mode (ESC)"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+
         </div>
       )}
 
-      {/* Canvas Chart Area */}
-      <div ref={containerRef} className="w-full h-[280px] xs:h-[320px] sm:h-[380px] md:h-[420px] lg:h-[460px] relative cursor-crosshair">
+      {/* 3. Floating Tooltip Header */}
+      {activeCandle && (
+        <div className="flex items-center justify-between gap-2 flex-wrap text-xs font-mono bg-[#141517] light:bg-slate-100 px-3 py-1.5 rounded-md border border-slate-800 light:border-slate-300 text-slate-300 light:text-slate-800">
+          <div className="flex items-center gap-3 flex-wrap">
+            <span className="text-slate-400 light:text-slate-500 font-semibold">{activeCandle.time}</span>
+            <div>O: <span className="text-white light:text-slate-900 font-bold tabular-nums">{currencySymbol}{activeCandle.open?.toFixed(2)}</span></div>
+            <div>H: <span className="text-white light:text-slate-900 font-bold tabular-nums">{currencySymbol}{activeCandle.high?.toFixed(2)}</span></div>
+            <div>L: <span className="text-white light:text-slate-900 font-bold tabular-nums">{currencySymbol}{activeCandle.low?.toFixed(2)}</span></div>
+            <div>
+              C:{' '}
+              <span
+                className={`font-bold tabular-nums ${
+                  activeCandle.close >= activeCandle.open ? 'text-profit' : 'text-loss'
+                }`}
+              >
+                {currencySymbol}{activeCandle.close?.toFixed(2)}
+              </span>
+            </div>
+            <div>Vol: <span className="text-slate-400 light:text-slate-500 font-semibold tabular-nums">{activeCandle.volume?.toLocaleString()}</span></div>
+          </div>
+
+          {isDrawMode && (
+            <span className="text-[11px] font-mono text-[#2962FF] bg-[#2962FF]/15 px-2 py-0.5 rounded border border-[#2962FF]/30 animate-pulse font-bold hidden sm:inline-block">
+              Click & drag across chart to draw {selectedPreset.label}
+            </span>
+          )}
+        </div>
+      )}
+
+      {/* 4. Canvas Chart Area */}
+      <div
+        ref={containerRef}
+        className={`w-full h-[280px] xs:h-[320px] sm:h-[380px] md:h-[420px] lg:h-[460px] relative select-none ${
+          isDrawMode ? 'cursor-crosshair' : 'cursor-crosshair'
+        }`}
+      >
         {loading ? (
           <div className="w-full h-full skeleton-shimmer" />
         ) : (
           <canvas
             ref={canvasRef}
+            onMouseDown={handleMouseDown}
             onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseLeave}
+            onTouchStart={handleMouseDown}
             onTouchMove={handleMouseMove}
-            onTouchEnd={handleMouseLeave}
+            onTouchEnd={handleMouseUp}
             className="w-full h-full block touch-none"
           />
         )}

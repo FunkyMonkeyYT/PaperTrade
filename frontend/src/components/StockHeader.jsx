@@ -4,7 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { COUNTRIES } from '../constants/theme';
 
 export default function StockHeader({ metricsData, loading, onSelectTicker }) {
-  const { getCurrencySymbol, currentCountryObj, convertFx, FX_RATES } = useAuth();
+  const { getCurrencySymbol, getCurrencyFromTicker, currentCountryObj, convertFx, FX_RATES } = useAuth();
 
   if (loading && !metricsData) {
     return (
@@ -27,9 +27,9 @@ export default function StockHeader({ metricsData, loading, onSelectTicker }) {
   const q = metricsData.quant_scores;
   const isPositive = m.change_amount >= 0;
 
-  // Active user market currency
+  // Active user market currency & ticker native currency
   const activeCurrency = currentCountryObj.currency || 'USD';
-  const nativeCurrency = m.currency || (metricsData.ticker.includes('.NS') ? 'INR' : (metricsData.ticker.includes('.L') ? 'GBP' : (metricsData.ticker.includes('.T') ? 'JPY' : 'USD')));
+  const nativeCurrency = getCurrencyFromTicker(metricsData.ticker) || m.currency || 'USD';
 
   // Converted price in active user currency
   const fxMultiplier = (FX_RATES[activeCurrency] || 1.0) / (FX_RATES[nativeCurrency] || 1.0);
