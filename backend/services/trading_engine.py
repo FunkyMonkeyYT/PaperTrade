@@ -360,7 +360,8 @@ class TradingEngine:
                     portfolio_id=portfolio.id,
                     ticker=clean_ticker,
                     shares=shares,
-                    average_entry_price=round(execution_price, 4)
+                    average_entry_price=round(execution_price, 4),
+                    last_known_price=round(execution_price, 2)
                 )
                 db.add(position)
                 shares_remaining = shares
@@ -452,11 +453,12 @@ class TradingEngine:
                 if native_price > 0:
                     fx_factor = cls.get_fx_rate(stock_curr, portfolio_curr)
                     current_price = round(native_price * fx_factor, 2)
+                    pos.last_known_price = current_price
                 else:
-                    current_price = pos.average_entry_price
+                    current_price = pos.last_known_price if pos.last_known_price else pos.average_entry_price
             except Exception as e:
                 logger.warning(f"Error resolving live price for {pos.ticker}: {e}")
-                current_price = pos.average_entry_price
+                current_price = pos.last_known_price if pos.last_known_price else pos.average_entry_price
 
             mkt_val = round(pos.shares * current_price, 2)
             cost = round(pos.shares * pos.average_entry_price, 2)
@@ -479,6 +481,13 @@ class TradingEngine:
             ))
 
         total_portfolio_value = round(portfolio.cash_balance + total_market_value, 2)
+        
+        # Commit any last_known_price updates
+        try:
+            db.commit()
+        except Exception as e:
+            logger.warning(f"Error committing last_known_price updates: {e}")
+            db.rollback()
 
         # Calculate allocations
         for pd_item in position_details:

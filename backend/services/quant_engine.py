@@ -6,6 +6,7 @@ from typing import Dict, Any, List, Optional, Tuple, Union
 import yfinance as yf
 import pandas as pd
 import numpy as np
+import requests
 
 from models.schemas import (
     StockMetricsResponse,

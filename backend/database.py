@@ -73,6 +73,13 @@ def init_db():
         except Exception:
             pass
 
+        # Check and add positions columns
+        try:
+            conn.execute(text("ALTER TABLE positions ADD COLUMN last_known_price FLOAT"))
+            conn.commit()
+        except Exception:
+            pass
+
 def get_db():
     """FastAPI Dependency for database session management."""
     db = SessionLocal()

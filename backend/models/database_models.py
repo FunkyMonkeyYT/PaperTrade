@@ -43,6 +43,7 @@ class Position(Base):
     ticker = Column(String(20), index=True, nullable=False)
     shares = Column(Float, default=0.0, nullable=False)
     average_entry_price = Column(Float, default=0.0, nullable=False)
+    last_known_price = Column(Float, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
