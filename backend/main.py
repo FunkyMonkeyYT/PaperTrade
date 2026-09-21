@@ -39,7 +39,6 @@ app = FastAPI(
 )
 
 # Configure CORS
-from fastapi.middleware.cors import CORSMiddleware
 
 # Define the origins that are allowed to make requests to your backend
 origins = [
