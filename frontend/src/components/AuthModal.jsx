@@ -59,7 +59,11 @@ export default function AuthModal({ isOpen, onClose }) {
   useEffect(() => {
     if (!isOpen) return;
 
-    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '135710814133-o6cbe73e8v3l5en719sbpmku4i3qn6gi.apps.googleusercontent.com';
+    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+    if (!clientId) {
+      console.warn('VITE_GOOGLE_CLIENT_ID is not set in .env — Google Sign-In will not work.');
+      return;
+    }
 
     const handleCredentialResponse = async (response) => {
       if (!response.credential) return;
@@ -257,14 +261,14 @@ export default function AuthModal({ isOpen, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn">
-      <div className="max-w-md w-full p-5 sm:p-7 rounded-lg border border-slate-800 bg-[#0C0D0E] shadow-2xl relative animate-scaleIn my-auto transition-colors">
+    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn">
+      <div className="max-w-md w-full p-5 sm:p-7 rounded-lg border border-slate-200 bg-white shadow-xl relative animate-scaleIn my-auto transition-colors">
         
         {/* Close button if user already logged in */}
         {currentUsername && (
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 p-1.5 rounded-md text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+            className="absolute top-4 right-4 p-1.5 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -272,14 +276,14 @@ export default function AuthModal({ isOpen, onClose }) {
 
         {/* Brand Icon & Heading */}
         <div className="text-center space-y-1.5 mb-5">
-          <div className="w-11 h-11 rounded-lg bg-[#2962FF]/15 border border-[#2962FF]/40 flex items-center justify-center mx-auto shadow-md shadow-[#2962FF]/15">
-            <KeyRound className="w-5 h-5 text-[#2962FF]" />
+          <div className="w-11 h-11 rounded-lg bg-[#2563EB]/10 border border-[#2563EB]/25 flex items-center justify-center mx-auto">
+            <KeyRound className="w-5 h-5 text-[#2563EB]" />
           </div>
           <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
               {tab === 'login' ? 'Sign In to Terminal' : 'Create Trading Account'}
             </h2>
-            <p className="text-xs text-slate-400 mt-0.5 font-mono">
+            <p className="text-xs text-slate-500 mt-0.5 font-mono">
               Unified cross-device trading simulator across Top 10 world markets
             </p>
           </div>
@@ -293,7 +297,7 @@ export default function AuthModal({ isOpen, onClose }) {
               type="button"
               onClick={handleDirectGoogleLogin}
               disabled={loading}
-              className="w-full py-2.5 px-4 rounded-md bg-[#141517] hover:bg-slate-800 border border-slate-700/80 text-xs sm:text-sm font-semibold text-white flex items-center justify-center gap-2.5 transition-all shadow-sm cursor-pointer disabled:opacity-50"
+              className="w-full py-2.5 px-4 rounded-md bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs sm:text-sm font-semibold text-slate-800 flex items-center justify-center gap-2.5 transition-all shadow-sm cursor-pointer disabled:opacity-50"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24">
                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -306,14 +310,14 @@ export default function AuthModal({ isOpen, onClose }) {
           </div>
 
           <div className="flex items-center gap-3 my-3 w-full">
-            <div className="h-px bg-slate-800 flex-1" />
-            <span className="text-[10px] font-mono uppercase text-slate-500 font-bold">Or with credentials</span>
-            <div className="h-px bg-slate-800 flex-1" />
+            <div className="h-px bg-slate-200 flex-1" />
+            <span className="text-[10px] font-mono uppercase text-slate-400 font-bold">Or with credentials</span>
+            <div className="h-px bg-slate-200 flex-1" />
           </div>
         </div>
 
         {/* Tab Switcher (Log In vs Register) */}
-        <div className="grid grid-cols-2 p-0.5 bg-[#141517] border border-slate-800 rounded-md mb-4">
+        <div className="grid grid-cols-2 p-0.5 bg-slate-100 border border-slate-200 rounded-md mb-4">
           <button
             type="button"
             onClick={() => {
@@ -322,8 +326,8 @@ export default function AuthModal({ isOpen, onClose }) {
             }}
             className={`py-1.5 text-xs font-mono font-bold rounded transition-all cursor-pointer ${
               tab === 'login'
-                ? 'bg-[#2962FF] text-white shadow-sm'
-                : 'text-slate-400 hover:text-white'
+                ? 'bg-[#2563EB] text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             Log In
@@ -336,8 +340,8 @@ export default function AuthModal({ isOpen, onClose }) {
             }}
             className={`py-1.5 text-xs font-mono font-bold rounded transition-all cursor-pointer ${
               tab === 'register'
-                ? 'bg-[#2962FF] text-white shadow-sm'
-                : 'text-slate-400 hover:text-white'
+                ? 'bg-[#2563EB] text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             Register
@@ -349,18 +353,18 @@ export default function AuthModal({ isOpen, onClose }) {
           
           {/* Username or Email */}
           <div>
-            <label className="block text-[11px] font-mono text-slate-300 font-bold mb-1">
+            <label className="block text-[11px] font-mono text-slate-700 font-bold mb-1">
               {tab === 'login' ? 'Username or Email' : 'Username'}
             </label>
             <div className="relative flex items-center">
-              <User className="w-3.5 h-3.5 text-slate-500 absolute left-3 pointer-events-none" />
+              <User className="w-3.5 h-3.5 text-slate-400 absolute left-3 pointer-events-none" />
               <input
                 type="text"
                 required
                 value={usernameOrEmail}
                 onChange={(e) => setUsernameOrEmail(e.target.value)}
                 placeholder={tab === 'login' ? 'trader_sam or name@email.com' : 'trader_sam'}
-                className="w-full bg-[#141517] border border-slate-700/80 rounded-md pl-9 pr-3 py-2 text-white font-mono text-xs focus:outline-none focus:border-[#2962FF] transition-all"
+                className="w-full bg-slate-50 border border-slate-300 rounded-md pl-9 pr-3 py-2 text-slate-900 placeholder:text-slate-400 font-mono text-xs focus:outline-none focus:border-[#2563EB] transition-all"
               />
             </div>
           </div>
@@ -368,17 +372,17 @@ export default function AuthModal({ isOpen, onClose }) {
           {/* Optional Email on Registration */}
           {tab === 'register' && (
             <div>
-              <label className="block text-[11px] font-mono text-slate-300 font-bold mb-1">
+              <label className="block text-[11px] font-mono text-slate-700 font-bold mb-1">
                 Email <span className="text-slate-500 font-normal">(Optional for cross-device sync)</span>
               </label>
               <div className="relative flex items-center">
-                <Mail className="w-3.5 h-3.5 text-slate-500 absolute left-3 pointer-events-none" />
+                <Mail className="w-3.5 h-3.5 text-slate-400 absolute left-3 pointer-events-none" />
                 <input
                   type="email"
                   value={regEmail}
                   onChange={(e) => setRegEmail(e.target.value)}
                   placeholder="yourname@gmail.com"
-                  className="w-full bg-[#141517] border border-slate-700/80 rounded-md pl-9 pr-3 py-2 text-white font-mono text-xs focus:outline-none focus:border-[#2962FF] transition-all"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-md pl-9 pr-3 py-2 text-slate-900 placeholder:text-slate-400 font-mono text-xs focus:outline-none focus:border-[#2563EB] transition-all"
                 />
               </div>
             </div>
@@ -387,16 +391,16 @@ export default function AuthModal({ isOpen, onClose }) {
           {/* Primary Market on Registration */}
           {tab === 'register' && (
             <div>
-              <label className="block text-[11px] font-mono text-slate-300 font-bold mb-1">
+              <label className="block text-[11px] font-mono text-slate-700 font-bold mb-1">
                 Primary Market Profile
               </label>
               <select
                 value={selectedCountry}
                 onChange={(e) => setSelectedCountry(e.target.value)}
-                className="w-full bg-[#141517] border border-slate-700/80 rounded-md px-3 py-2 text-white font-mono text-xs focus:outline-none focus:border-[#2962FF] transition-all cursor-pointer"
+                className="w-full bg-slate-50 border border-slate-300 rounded-md px-3 py-2 text-slate-900 font-mono text-xs focus:outline-none focus:border-[#2563EB] transition-all cursor-pointer"
               >
                 {COUNTRIES.map((c) => (
-                  <option key={c.code} value={c.code} className="bg-[#0C0D0E] text-white">
+                  <option key={c.code} value={c.code} className="bg-white text-slate-900">
                     {c.flag} {c.name} ({c.exchange} - {c.currency})
                   </option>
                 ))}
@@ -408,14 +412,14 @@ export default function AuthModal({ isOpen, onClose }) {
           {tab === 'register' && (
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="text-[11px] font-mono text-slate-300 font-bold flex items-center gap-1.5">
-                  <ImageIcon className="w-3 h-3 text-[#2962FF]" />
+                <label className="text-[11px] font-mono text-slate-700 font-bold flex items-center gap-1.5">
+                  <ImageIcon className="w-3 h-3 text-[#2563EB]" />
                   <span>Choose Profile Avatar (PFP)</span>
                 </label>
                 <button
                   type="button"
                   onClick={() => regFileInputRef.current?.click()}
-                  className="text-[11px] font-mono text-[#2962FF] hover:underline flex items-center gap-1 cursor-pointer"
+                  className="text-[11px] font-mono text-[#2563EB] hover:underline flex items-center gap-1 cursor-pointer"
                 >
                   <Upload className="w-3 h-3" />
                   <span>Upload File</span>
@@ -435,7 +439,7 @@ export default function AuthModal({ isOpen, onClose }) {
                   <img
                     src={customAvatarUrl}
                     alt="Custom Upload"
-                    className="w-8 h-8 rounded-full object-cover ring-2 ring-[#00D09C] shrink-0"
+                    className="w-8 h-8 rounded-full object-cover ring-2 ring-[#16A34A] shrink-0"
                     title="Custom uploaded image"
                   />
                 )}
@@ -450,7 +454,7 @@ export default function AuthModal({ isOpen, onClose }) {
                     }}
                     className={`w-8 h-8 rounded-full object-cover cursor-pointer transition-all shrink-0 ${
                       selectedAvatar === avatar && !customAvatarUrl
-                        ? 'ring-2 ring-[#2962FF] scale-110'
+                        ? 'ring-2 ring-[#2563EB] scale-110'
                         : 'opacity-60 hover:opacity-100'
                     }`}
                   />
@@ -461,23 +465,23 @@ export default function AuthModal({ isOpen, onClose }) {
 
           {/* Password */}
           <div>
-            <label className="block text-[11px] font-mono text-slate-300 font-bold mb-1">
+            <label className="block text-[11px] font-mono text-slate-700 font-bold mb-1">
               Password
             </label>
             <div className="relative flex items-center">
-              <Lock className="w-3.5 h-3.5 text-slate-500 absolute left-3 pointer-events-none" />
+              <Lock className="w-3.5 h-3.5 text-slate-400 absolute left-3 pointer-events-none" />
               <input
                 type={showPassword ? 'text' : 'password'}
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full bg-[#141517] border border-slate-700/80 rounded-md pl-9 pr-9 py-2 text-white font-mono text-xs focus:outline-none focus:border-[#2962FF] transition-all"
+                className="w-full bg-slate-50 border border-slate-300 rounded-md pl-9 pr-9 py-2 text-slate-900 placeholder:text-slate-400 font-mono text-xs focus:outline-none focus:border-[#2563EB] transition-all"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 text-slate-400 hover:text-white p-0.5 cursor-pointer"
+                className="absolute right-3 text-slate-400 hover:text-slate-600 p-0.5 cursor-pointer"
               >
                 {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
               </button>
@@ -487,18 +491,18 @@ export default function AuthModal({ isOpen, onClose }) {
           {/* Confirm Password on Registration */}
           {tab === 'register' && (
             <div>
-              <label className="block text-[11px] font-mono text-slate-300 font-bold mb-1">
+              <label className="block text-[11px] font-mono text-slate-700 font-bold mb-1">
                 Confirm Password
               </label>
               <div className="relative flex items-center">
-                <Lock className="w-3.5 h-3.5 text-slate-500 absolute left-3 pointer-events-none" />
+                <Lock className="w-3.5 h-3.5 text-slate-400 absolute left-3 pointer-events-none" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   required
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full bg-[#141517] border border-slate-700/80 rounded-md pl-9 pr-3 py-2 text-white font-mono text-xs focus:outline-none focus:border-[#2962FF] transition-all"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-md pl-9 pr-3 py-2 text-slate-900 placeholder:text-slate-400 font-mono text-xs focus:outline-none focus:border-[#2563EB] transition-all"
                 />
               </div>
             </div>
@@ -506,7 +510,7 @@ export default function AuthModal({ isOpen, onClose }) {
 
           {/* Error Alert */}
           {error && (
-            <div className="p-2.5 rounded-md bg-red-500/15 border border-red-500/30 text-red-400 text-xs font-mono">
+            <div className="p-2.5 rounded-md bg-red-50 border border-red-200 text-red-600 text-xs font-mono">
               {error}
             </div>
           )}
@@ -515,7 +519,7 @@ export default function AuthModal({ isOpen, onClose }) {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 rounded-md bg-[#2962FF] hover:bg-blue-600 text-white font-mono font-bold text-xs tracking-wide transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-50 mt-1 cursor-pointer"
+            className="w-full py-2.5 rounded-md bg-[#2563EB] hover:bg-blue-700 text-white font-mono font-bold text-xs tracking-wide transition-all shadow-sm flex items-center justify-center gap-2 disabled:opacity-50 mt-1 cursor-pointer"
           >
             {loading ? (
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -528,7 +532,7 @@ export default function AuthModal({ isOpen, onClose }) {
           </button>
         </form>
 
-        <p className="text-[11px] text-center text-slate-400 font-mono mt-3.5">
+        <p className="text-[11px] text-center text-slate-500 font-mono mt-3.5">
           {tab === 'login' ? (
             <span>
               Don't have an account?{' '}
@@ -538,7 +542,7 @@ export default function AuthModal({ isOpen, onClose }) {
                   setTab('register');
                   setError(null);
                 }}
-                className="text-[#2962FF] font-bold hover:underline cursor-pointer"
+                className="text-[#2563EB] font-bold hover:underline cursor-pointer"
               >
                 Sign up
               </button>
@@ -552,7 +556,7 @@ export default function AuthModal({ isOpen, onClose }) {
                   setTab('login');
                   setError(null);
                 }}
-                className="text-[#2962FF] font-bold hover:underline cursor-pointer"
+                className="text-[#2563EB] font-bold hover:underline cursor-pointer"
               >
                 Sign in
               </button>

@@ -8,30 +8,30 @@
 
 export const THEME = {
   dark: {
-    bgPage: '#000000',           // Pure Black
-    cardSurface: '#0C0D0E',      // Charcoal / Pure Black Card
-    subpanelSurface: '#141517',  // Elevated Panel
-    borderColor: 'rgba(38, 38, 38, 0.9)',
-    textPrimary: '#FFFFFF',      // White
-    textSecondary: '#9CA3AF',    // Grey
-    textMuted: '#6B7280',
-    profit: '#00D09C',           // Green for profit
-    profitBg: 'rgba(0, 208, 156, 0.15)',
-    loss: '#EB5B5B',             // Red for losses
-    lossBg: 'rgba(235, 91, 91, 0.15)',
-    accentBlue: '#2962FF',
+    bgPage: '#0B0F19',           // Flat Dark Slate
+    cardSurface: '#111827',      // Dark Card Surface
+    subpanelSurface: '#161F30',  // Dark Subpanel
+    borderColor: '#1F2937',      // Border
+    textPrimary: '#F8FAFC',
+    textSecondary: '#94A3B8',
+    textMuted: '#64748B',
+    profit: '#16A34A',
+    profitBg: 'rgba(22, 163, 74, 0.15)',
+    loss: '#DC2626',
+    lossBg: 'rgba(220, 38, 38, 0.15)',
+    accentBlue: '#2563EB',
   },
   light: {
-    bgPage: '#FFFFFF',           // Pure White
-    cardSurface: '#FAFAFA',      // Crisp White Card
-    subpanelSurface: '#F3F4F6',
+    bgPage: '#F9FAFB',           // Flat Light Canvas
+    cardSurface: '#FFFFFF',      // White Card
+    subpanelSurface: '#F3F4F6',  // Flat Neutral Subpanel
     borderColor: '#E5E7EB',
-    textPrimary: '#047857',      // Green for text
-    textSecondary: '#065F46',    // Darker Green text
-    textMuted: '#059669',
-    profit: '#2563EB',           // Blue for profit
-    profitBg: 'rgba(37, 99, 235, 0.12)',
-    loss: '#DC2626',             // Red for losses
+    textPrimary: '#111827',
+    textSecondary: '#4B5563',
+    textMuted: '#6B7280',
+    profit: '#16A34A',
+    profitBg: 'rgba(22, 163, 74, 0.12)',
+    loss: '#DC2626',
     lossBg: 'rgba(220, 38, 38, 0.12)',
     accentBlue: '#2563EB',
   },
@@ -53,7 +53,6 @@ export const COUNTRIES = [
   {
     code: 'US',
     name: 'United States',
-    flag: '🇺🇸',
     exchange: 'NYSE / NASDAQ',
     currency: 'USD',
     symbol: '$',
@@ -64,7 +63,6 @@ export const COUNTRIES = [
   {
     code: 'IN',
     name: 'India',
-    flag: '🇮🇳',
     exchange: 'NSE / BSE',
     currency: 'INR',
     symbol: '₹',
@@ -75,7 +73,6 @@ export const COUNTRIES = [
   {
     code: 'JP',
     name: 'Japan',
-    flag: '🇯🇵',
     exchange: 'TSE / Nikkei',
     currency: 'JPY',
     symbol: '¥',
@@ -86,7 +83,6 @@ export const COUNTRIES = [
   {
     code: 'GB',
     name: 'United Kingdom',
-    flag: '🇬🇧',
     exchange: 'LSE (London Stock Exchange)',
     currency: 'GBP',
     symbol: '£',
@@ -97,7 +93,6 @@ export const COUNTRIES = [
   {
     code: 'EU',
     name: 'Europe',
-    flag: '🇪🇺',
     exchange: 'Euronext / DAX (Frankfurt & Paris)',
     currency: 'EUR',
     symbol: '€',
@@ -108,7 +103,6 @@ export const COUNTRIES = [
   {
     code: 'HK',
     name: 'Hong Kong / China',
-    flag: '🇨🇳',
     exchange: 'HKEX (Hong Kong Stock Exchange)',
     currency: 'HKD',
     symbol: 'HK$',
@@ -119,7 +113,6 @@ export const COUNTRIES = [
   {
     code: 'CA',
     name: 'Canada',
-    flag: '🇨🇦',
     exchange: 'TSX (Toronto Stock Exchange)',
     currency: 'CAD',
     symbol: 'CA$',
@@ -130,7 +123,6 @@ export const COUNTRIES = [
   {
     code: 'AU',
     name: 'Australia',
-    flag: '🇦🇺',
     exchange: 'ASX (Australian Securities Exchange)',
     currency: 'AUD',
     symbol: 'A$',
@@ -141,7 +133,6 @@ export const COUNTRIES = [
   {
     code: 'CH',
     name: 'Switzerland',
-    flag: '🇨🇭',
     exchange: 'SIX Swiss Exchange',
     currency: 'CHF',
     symbol: 'CHF ',
@@ -152,7 +143,6 @@ export const COUNTRIES = [
   {
     code: 'GLOBAL',
     name: 'Global Crypto',
-    flag: '🌐',
     exchange: '24/7 Digital Asset Markets',
     currency: 'USD',
     symbol: '$',

@@ -40,50 +40,65 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Configure CORS
+# ---------------------------------------------------------------------------
+# CORS — Whitelist only known origins (loaded from env var)
+# ---------------------------------------------------------------------------
+allowed_origins_str = os.getenv("ALLOWED_ORIGINS", "http://localhost:5173,http://localhost:3000")
+allowed_origins = [o.strip() for o in allowed_origins_str.split(",") if o.strip()]
 
-# Define the origins that are allowed to make requests to your backend
-origins = [
-    "http://localhost:5173",  # Vite default local frontend port
-    "http://localhost:3000",  # React default local frontend port
-    "https://*.vercel.app",   # Any Vercel deployment preview
-]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=allowed_origins,
+    allow_credentials=True,
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allow_headers=["*"],
+)
 
+# ---------------------------------------------------------------------------
 # Rate Limiting Configuration
+# ---------------------------------------------------------------------------
 rate_limit_storage = MemoryStorage()
 rate_limit_strategy = strategies.FixedWindowRateLimiter(rate_limit_storage)
 global_rate_limit = parse("200/minute")
-auth_rate_limit = parse("5/minute")
+auth_rate_limit = parse("5/15 minutes")     # 5 attempts per 15 min on auth routes
+
+# Maximum request body size (1 MB)
+MAX_BODY_SIZE = 1 * 1024 * 1024
 
 @app.middleware("http")
-async def rate_limit_middleware(request: Request, call_next):
+async def security_middleware(request: Request, call_next):
     ip = request.client.host if request.client else "127.0.0.1"
     path = request.url.path
-    
+
+    # --- Body size limit (reject oversized payloads) ---
+    content_length = request.headers.get("content-length")
+    if content_length and int(content_length) > MAX_BODY_SIZE:
+        return JSONResponse(
+            status_code=413,
+            content={"detail": "Request body too large. Maximum size is 1 MB."}
+        )
+
+    # --- Rate limiting ---
     # Stricter rate limits for authentication endpoints
-    if path.startswith("/api/auth/login") or path.startswith("/api/auth/register"):
+    if (
+        path.startswith("/api/auth/login")
+        or path.startswith("/api/auth/register")
+        or path.startswith("/api/auth/google")
+    ):
         if not rate_limit_strategy.hit(auth_rate_limit, ip, path):
             return JSONResponse(
-                status_code=429, 
-                content={"detail": "Too many authentication attempts. Please try again later."}
+                status_code=429,
+                content={"detail": "Too many authentication attempts. Please try again in 15 minutes."}
             )
     else:
         # Global rate limit for all other endpoints
         if not rate_limit_strategy.hit(global_rate_limit, ip, "global"):
             return JSONResponse(
-                status_code=429, 
+                status_code=429,
                 content={"detail": "Rate limit exceeded. Too many requests."}
             )
-            
-    return await call_next(request)
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],      # Allows all origins
-    allow_credentials=False,  # Set to False so wildcard origins don't crash
-    allow_methods=["*"],      # Allows all HTTP methods (GET, POST, PUT, DELETE, etc.)
-    allow_headers=["*"],      # Allows all HTTP headers
-)
+    return await call_next(request)
 
 # Register Routers
 app.include_router(health_router)
@@ -112,10 +127,11 @@ def root():
 
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
+    # Log full error details server-side; never expose them to the client
     logger.error(f"Global exception on {request.url.path}: {exc}", exc_info=True)
     return JSONResponse(
         status_code=500,
-        content={"detail": f"Internal Server Error: {str(exc)}"}
+        content={"detail": "Internal server error."}
     )
 
 if __name__ == "__main__":

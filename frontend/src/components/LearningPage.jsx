@@ -304,41 +304,40 @@ export default function LearningPage({ onSelectTicker }) {
     <div className="space-y-6 animate-fadeIn transition-colors">
       
       {/* Hero Header */}
-      <div className="rounded-xl border border-slate-800 light:border-slate-200 bg-[#0C0D0E] light:bg-white p-6 sm:p-8 shadow-sm transition-colors">
+      <div className="rounded-xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm transition-colors">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2 max-w-2xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2962FF]/15 border border-[#2962FF]/30 text-xs font-mono font-bold text-[#2962FF]">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#2563EB]/10 border border-[#2563EB]/25 text-xs font-mono font-bold text-[#2563EB]">
               <GraduationCap className="w-3.5 h-3.5" />
               <span>PaperTrade Learning Area</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white light:text-[#047857] tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               Quantitative Academy & High School Finance Guide
             </h1>
-            <p className="text-xs sm:text-sm text-slate-400 light:text-slate-600 font-mono leading-relaxed">
-              Curated masterclasses from world-renowned professors and hedge fund managers, top YouTube channels, 
-              and the definitive guide for high school students aiming for Wall Street and Quant Trading.
+            <p className="text-xs sm:text-sm text-slate-600 font-mono leading-relaxed">
+              Educational resources from university professors and industry professionals, including video masterclasses and career guides for quantitative finance.
             </p>
           </div>
 
           {/* Quick Metrics */}
           <div className="grid grid-cols-3 gap-3 font-mono text-center shrink-0">
-            <div className="bg-[#141517] light:bg-slate-100 p-3 rounded-lg border border-slate-800 light:border-slate-300">
-              <div className="text-[10px] text-slate-400 light:text-slate-500 uppercase font-bold">Videos</div>
-              <div className="text-base font-bold text-white light:text-slate-900">{VIDEOS.length} Modules</div>
+            <div className="bg-slate-50 p-3 rounded-lg border border-slate-200">
+              <div className="text-[10px] text-slate-500 uppercase font-bold">Videos</div>
+              <div className="text-base font-bold text-slate-900">{VIDEOS.length} Modules</div>
             </div>
-            <div className="bg-[#141517] light:bg-slate-100 p-3 rounded-lg border border-slate-800 light:border-slate-300">
-              <div className="text-[10px] text-slate-400 light:text-slate-500 uppercase font-bold">Channels</div>
-              <div className="text-base font-bold text-[#2962FF]">{RECOMMENDED_CHANNELS.length} Curated</div>
+            <div className="bg-slate-50 p-3 rounded-lg border border-slate-200">
+              <div className="text-[10px] text-slate-500 uppercase font-bold">Channels</div>
+              <div className="text-base font-bold text-[#2563EB]">{RECOMMENDED_CHANNELS.length} Curated</div>
             </div>
-            <div className="bg-[#141517] light:bg-slate-100 p-3 rounded-lg border border-slate-800 light:border-slate-300">
-              <div className="text-[10px] text-slate-400 light:text-slate-500 uppercase font-bold">Target Paths</div>
+            <div className="bg-slate-50 p-3 rounded-lg border border-slate-200">
+              <div className="text-[10px] text-slate-500 uppercase font-bold">Target Paths</div>
               <div className="text-base font-bold text-profit">4 Careers</div>
             </div>
           </div>
         </div>
 
         {/* Sub Navigation Tabs */}
-        <div className="flex items-center gap-2 mt-6 pt-4 border-t border-slate-800/80 light:border-slate-200 overflow-x-auto no-scrollbar">
+        <div className="flex items-center gap-2 mt-6 pt-4 border-t border-slate-200 overflow-x-auto no-scrollbar">
           {[
             { id: 'videos', label: 'Video Masterclasses', icon: Video },
             { id: 'channels', label: 'Recommended Channels', icon: Tv },
@@ -352,8 +351,8 @@ export default function LearningPage({ onSelectTicker }) {
                 onClick={() => setActiveTab(t.id)}
                 className={`flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer whitespace-nowrap ${
                   activeTab === t.id
-                    ? 'bg-[#2962FF] text-white shadow-md'
-                    : 'bg-[#141517] light:bg-slate-100 text-slate-400 light:text-slate-700 hover:text-white light:hover:text-black hover:bg-slate-800'
+                    ? 'bg-[#2563EB] text-white shadow-sm'
+                    : 'bg-slate-100 text-slate-700 hover:text-slate-900 hover:bg-slate-200 border border-slate-200'
                 }`}
               >
                 <Icon className="w-3.5 h-3.5" />
@@ -370,7 +369,7 @@ export default function LearningPage({ onSelectTicker }) {
           
           {/* Main Video Player & Notes (2 Cols) */}
           <div className="lg:col-span-2 space-y-4">
-            <div className="rounded-xl border border-slate-800 light:border-slate-200 bg-[#0C0D0E] light:bg-white overflow-hidden shadow-sm">
+            <div className="rounded-xl border border-slate-200 bg-white overflow-hidden shadow-sm">
               <div className="relative w-full aspect-video bg-black flex items-center justify-center">
                 {isPlaying ? (
                   <iframe
@@ -387,18 +386,18 @@ export default function LearningPage({ onSelectTicker }) {
                       alt={selectedVideo.title}
                       className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex flex-col justify-between p-6">
+                    <div className="absolute inset-0 bg-black/60 flex flex-col justify-between p-6">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-mono font-bold px-2.5 py-1 rounded bg-[#2962FF] text-white shadow-md">
+                        <span className="text-xs font-mono font-bold px-2.5 py-1 rounded bg-[#2563EB] text-white shadow-sm">
                           {selectedVideo.category}
                         </span>
-                        <span className="text-xs font-mono text-slate-300 bg-black/60 px-2 py-0.5 rounded backdrop-blur-sm">
+                        <span className="text-xs font-mono text-slate-300 bg-black/80 px-2 py-0.5 rounded">
                           {selectedVideo.duration}
                         </span>
                       </div>
 
                       <div className="flex items-center gap-4">
-                        <div className="w-14 h-14 rounded-full bg-[#2962FF] text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                        <div className="w-14 h-14 rounded-full bg-[#2563EB] text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
                           <Play className="w-6 h-6 fill-current ml-0.5" />
                         </div>
                         <div>
@@ -417,13 +416,13 @@ export default function LearningPage({ onSelectTicker }) {
 
               {/* Video Metadata & Description */}
               <div className="p-5 sm:p-6 space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-800 light:border-slate-200">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-200">
                   <div>
-                    <h2 className="text-lg font-bold text-white light:text-slate-900">
+                    <h2 className="text-lg font-bold text-slate-900">
                       {selectedVideo.title}
                     </h2>
-                    <div className="flex items-center gap-2 mt-1 text-xs font-mono text-slate-400 light:text-slate-600">
-                      <span className="font-semibold text-[#2962FF]">{selectedVideo.channel}</span>
+                    <div className="flex items-center gap-2 mt-1 text-xs font-mono text-slate-600">
+                      <span className="font-semibold text-[#2563EB]">{selectedVideo.channel}</span>
                       <span>•</span>
                       <span>{selectedVideo.level}</span>
                       <span>•</span>
@@ -435,27 +434,27 @@ export default function LearningPage({ onSelectTicker }) {
                     href={`https://www.youtube.com/watch?v=${selectedVideo.youtubeId}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#141517] light:bg-slate-100 hover:bg-slate-800 text-xs font-mono font-bold text-slate-300 light:text-slate-700 border border-slate-700 light:border-slate-300 transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-slate-100 hover:bg-slate-200 text-xs font-mono font-bold text-slate-700 border border-slate-200 transition-colors"
                   >
                     <span>Watch on YouTube</span>
                     <ExternalLink className="w-3.5 h-3.5" />
                   </a>
                 </div>
 
-                <p className="text-xs sm:text-sm text-slate-300 light:text-slate-700 font-mono leading-relaxed">
+                <p className="text-xs sm:text-sm text-slate-700 font-mono leading-relaxed">
                   {selectedVideo.description}
                 </p>
 
                 {/* Key Concepts Covered */}
                 <div>
-                  <h4 className="text-xs font-bold text-slate-400 light:text-slate-500 uppercase font-mono mb-2">
+                  <h4 className="text-xs font-bold text-slate-500 uppercase font-mono mb-2">
                     Key Concepts Covered:
                   </h4>
                   <div className="flex flex-wrap gap-2">
                     {selectedVideo.topics.map((t, idx) => (
                       <span
                         key={idx}
-                        className="px-2.5 py-1 rounded bg-[#141517] light:bg-slate-100 border border-slate-800 light:border-slate-300 text-xs font-mono text-slate-300 light:text-slate-800"
+                        className="px-2.5 py-1 rounded bg-slate-100 border border-slate-200 text-xs font-mono text-slate-800"
                       >
                         {t}
                       </span>
@@ -468,7 +467,7 @@ export default function LearningPage({ onSelectTicker }) {
 
           {/* Video Playlist Sidebar (1 Col) */}
           <div className="space-y-3">
-            <h3 className="text-xs font-bold text-slate-400 light:text-slate-500 uppercase font-mono px-1">
+            <h3 className="text-xs font-bold text-slate-500 uppercase font-mono px-1">
               Curated Curriculum ({VIDEOS.length} Masterclasses)
             </h3>
             
@@ -484,8 +483,8 @@ export default function LearningPage({ onSelectTicker }) {
                     }}
                     className={`p-3 rounded-lg border transition-all cursor-pointer flex gap-3 ${
                       isSelected
-                        ? 'bg-[#141517] light:bg-slate-100 border-[#2962FF] shadow-sm'
-                        : 'bg-[#0C0D0E] light:bg-white border-slate-800 light:border-slate-200 hover:border-slate-700'
+                        ? 'bg-slate-50 border-[#2563EB] shadow-sm'
+                        : 'bg-white border-slate-200 hover:border-slate-300'
                     }`}
                   >
                     <div className="w-20 h-14 rounded overflow-hidden relative shrink-0 bg-black">
@@ -496,10 +495,10 @@ export default function LearningPage({ onSelectTicker }) {
                     </div>
 
                     <div className="flex flex-col justify-between overflow-hidden">
-                      <h4 className="text-xs font-bold text-white light:text-slate-900 line-clamp-2 leading-tight">
+                      <h4 className="text-xs font-bold text-slate-900 line-clamp-2 leading-tight">
                         {vid.title}
                       </h4>
-                      <div className="flex items-center gap-1.5 text-[11px] font-mono text-slate-400 light:text-slate-500 mt-1">
+                      <div className="flex items-center gap-1.5 text-[11px] font-mono text-slate-500 mt-1">
                         <span className="truncate">{vid.channel}</span>
                       </div>
                     </div>
@@ -515,11 +514,11 @@ export default function LearningPage({ onSelectTicker }) {
       {/* TAB 2: Recommended YouTube Channels */}
       {activeTab === 'channels' && (
         <div className="space-y-4">
-          <div className="p-4 rounded-lg bg-[#141517] light:bg-slate-50 border border-slate-800 light:border-slate-200">
-            <h3 className="text-sm font-bold text-white light:text-slate-900 font-mono">
+          <div className="p-4 rounded-lg bg-slate-50 border border-slate-200">
+            <h3 className="text-sm font-bold text-slate-900 font-mono">
               Top Recommended Channels for High Schoolers & Aspiring Quants
             </h3>
-            <p className="text-xs text-slate-400 light:text-slate-600 font-mono mt-0.5">
+            <p className="text-xs text-slate-600 font-mono mt-0.5">
               These channels offer rigorous, non-sensationalized market education from university professors, CFA charterholders, and hedge fund managers.
             </p>
           </div>
@@ -528,40 +527,40 @@ export default function LearningPage({ onSelectTicker }) {
             {RECOMMENDED_CHANNELS.map((ch, idx) => (
               <div
                 key={idx}
-                className="p-5 rounded-lg border border-slate-800 light:border-slate-200 bg-[#0C0D0E] light:bg-white shadow-sm flex flex-col justify-between hover:border-[#2962FF] transition-all"
+                className="p-5 rounded-lg border border-slate-200 bg-white shadow-sm flex flex-col justify-between hover:border-[#2563EB] transition-all"
               >
                 <div>
                   <div className="flex items-center gap-3 mb-3">
                     <img
                       src={ch.avatar}
                       alt={ch.name}
-                      className="w-12 h-12 rounded-full object-cover border-2 border-[#2962FF] shadow-sm"
+                      className="w-12 h-12 rounded-full object-cover border-2 border-[#2563EB] shadow-sm"
                     />
                     <div>
-                      <h4 className="text-sm font-bold text-white light:text-slate-900 font-sans">
+                      <h4 className="text-sm font-bold text-slate-900 font-sans">
                         {ch.name}
                       </h4>
-                      <div className="text-[11px] font-mono text-[#2962FF] font-semibold">{ch.handle}</div>
-                      <span className="inline-block mt-0.5 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#141517] light:bg-slate-100 text-slate-300 light:text-slate-700 border border-slate-700 light:border-slate-300">
+                      <div className="text-[11px] font-mono text-[#2563EB] font-semibold">{ch.handle}</div>
+                      <span className="inline-block mt-0.5 px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-100 text-slate-700 border border-slate-200">
                         {ch.badge}
                       </span>
                     </div>
                   </div>
 
-                  <p className="text-xs text-slate-300 light:text-slate-700 font-mono leading-relaxed mb-4">
+                  <p className="text-xs text-slate-700 font-mono leading-relaxed mb-4">
                     {ch.description}
                   </p>
                 </div>
 
-                <div className="pt-3 border-t border-slate-800 light:border-slate-200 flex items-center justify-between">
-                  <span className="text-[11px] font-mono text-slate-400 light:text-slate-500 font-semibold">
+                <div className="pt-3 border-t border-slate-200 flex items-center justify-between">
+                  <span className="text-[11px] font-mono text-slate-500 font-semibold">
                     {ch.tag}
                   </span>
                   <a
                     href={ch.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-xs font-mono font-bold text-[#2962FF] hover:underline"
+                    className="inline-flex items-center gap-1 text-xs font-mono font-bold text-[#2563EB] hover:underline"
                   >
                     <span>Visit Channel</span>
                     <ExternalLink className="w-3 h-3" />
@@ -576,11 +575,11 @@ export default function LearningPage({ onSelectTicker }) {
       {/* TAB 3: College & Career Guide for Different Finance Positions */}
       {activeTab === 'colleges' && (
         <div className="space-y-6">
-          <div className="p-4 rounded-lg bg-[#141517] light:bg-slate-50 border border-slate-800 light:border-slate-200">
-            <h3 className="text-sm font-bold text-white light:text-slate-900 font-mono">
+          <div className="p-4 rounded-lg bg-slate-50 border border-slate-200">
+            <h3 className="text-sm font-bold text-slate-900 font-mono">
               Which Colleges Are Best For Different Finance Careers?
             </h3>
-            <p className="text-xs text-slate-400 light:text-slate-600 font-mono mt-0.5">
+            <p className="text-xs text-slate-600 font-mono mt-0.5">
               Wall Street and Quantitative Trading firms hire heavily based on target school pipelines. Here is the realistic breakdown by career track.
             </p>
           </div>
@@ -589,20 +588,20 @@ export default function LearningPage({ onSelectTicker }) {
             {CAREER_TRACKS.map((track, idx) => (
               <div
                 key={idx}
-                className="p-5 sm:p-6 rounded-lg border border-slate-800 light:border-slate-200 bg-[#0C0D0E] light:bg-white shadow-sm space-y-4"
+                className="p-5 sm:p-6 rounded-lg border border-slate-200 bg-white shadow-sm space-y-4"
               >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-800 light:border-slate-200">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-200">
                   <div>
-                    <h4 className="text-base sm:text-lg font-bold text-white light:text-[#047857] flex items-center gap-2">
-                      <Briefcase className="w-4 h-4 text-[#2962FF]" />
+                    <h4 className="text-base sm:text-lg font-bold text-slate-900 flex items-center gap-2">
+                      <Briefcase className="w-4 h-4 text-[#2563EB]" />
                       <span>{track.role}</span>
                     </h4>
-                    <p className="text-xs text-slate-400 light:text-slate-600 font-mono mt-1">
+                    <p className="text-xs text-slate-600 font-mono mt-1">
                       {track.whatTheyDo}
                     </p>
                   </div>
                   <div className="text-right shrink-0">
-                    <span className="text-[10px] font-mono uppercase text-slate-400 font-bold block">First Year Compensation</span>
+                    <span className="text-[10px] font-mono uppercase text-slate-500 font-bold block">First Year Compensation</span>
                     <span className="text-xs font-mono font-bold text-profit bg-profit-badge px-2 py-0.5 rounded">
                       {track.startingComp}
                     </span>
@@ -611,22 +610,22 @@ export default function LearningPage({ onSelectTicker }) {
 
                 {/* Target Schools Table */}
                 <div>
-                  <h5 className="text-xs font-bold text-slate-400 light:text-slate-500 uppercase font-mono mb-2.5">
+                  <h5 className="text-xs font-bold text-slate-500 uppercase font-mono mb-2.5">
                     Target Universities & Hiring Power:
                   </h5>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
                     {track.topColleges.map((col, cIdx) => (
                       <div
                         key={cIdx}
-                        className="p-3 rounded-md bg-[#141517] light:bg-slate-50 border border-slate-800 light:border-slate-200 font-mono"
+                        className="p-3 rounded-md bg-slate-50 border border-slate-200 font-mono"
                       >
                         <div className="flex items-center justify-between mb-1">
-                          <span className="font-bold text-xs text-white light:text-slate-900">{col.name}</span>
-                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#2962FF]/15 text-[#2962FF] font-semibold">
+                          <span className="font-bold text-xs text-slate-900">{col.name}</span>
+                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-[#2563EB]/10 text-[#2563EB] font-semibold">
                             {col.tier}
                           </span>
                         </div>
-                        <p className="text-[11px] text-slate-400 light:text-slate-600 leading-tight">
+                        <p className="text-[11px] text-slate-600 leading-tight">
                           {col.notes}
                         </p>
                       </div>
@@ -636,11 +635,11 @@ export default function LearningPage({ onSelectTicker }) {
 
                 {/* Recommended Majors */}
                 <div className="flex items-center gap-2 flex-wrap pt-2 text-xs font-mono">
-                  <span className="text-slate-400 font-bold uppercase text-[11px]">Recommended College Majors:</span>
+                  <span className="text-slate-500 font-bold uppercase text-[11px]">Recommended College Majors:</span>
                   {track.recommendedMajors.map((m, mIdx) => (
                     <span
                       key={mIdx}
-                      className="px-2 py-0.5 rounded bg-[#141517] light:bg-slate-100 text-slate-300 light:text-slate-800 border border-slate-700 light:border-slate-300 text-[11px]"
+                      className="px-2 py-0.5 rounded bg-slate-100 text-slate-800 border border-slate-200 text-[11px]"
                     >
                       {m}
                     </span>
@@ -655,11 +654,11 @@ export default function LearningPage({ onSelectTicker }) {
       {/* TAB 4: High School Extracurriculars (ECs) & Competitions */}
       {activeTab === 'ecs' && (
         <div className="space-y-6">
-          <div className="p-4 rounded-lg bg-[#141517] light:bg-slate-50 border border-slate-800 light:border-slate-200">
-            <h3 className="text-sm font-bold text-white light:text-slate-900 font-mono">
+          <div className="p-4 rounded-lg bg-slate-50 border border-slate-200">
+            <h3 className="text-sm font-bold text-slate-900 font-mono">
               High School Extracurriculars (ECs) That Top College Admissions Love
             </h3>
-            <p className="text-xs text-slate-400 light:text-slate-600 font-mono mt-0.5">
+            <p className="text-xs text-slate-600 font-mono mt-0.5">
               To stand out for Wharton, Harvard, MIT, or Stanford finance/quant tracks, you need Tier 1 & Tier 2 extracurriculars that demonstrate passion and quantitative rigor.
             </p>
           </div>
@@ -668,11 +667,11 @@ export default function LearningPage({ onSelectTicker }) {
             {HIGH_SCHOOL_ECS.map((ec, idx) => (
               <div
                 key={idx}
-                className="p-5 rounded-lg border border-slate-800 light:border-slate-200 bg-[#0C0D0E] light:bg-white shadow-sm flex flex-col justify-between hover:border-[#2962FF] transition-all"
+                className="p-5 rounded-lg border border-slate-200 bg-white shadow-sm flex flex-col justify-between hover:border-[#2563EB] transition-all"
               >
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#2962FF]/15 text-[#2962FF] border border-[#2962FF]/30">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-[#2563EB]/10 text-[#2563EB] border border-[#2563EB]/25">
                       {ec.category}
                     </span>
                     <span className="text-[10px] font-mono text-profit bg-profit-badge px-2 py-0.5 rounded font-bold">
@@ -680,27 +679,27 @@ export default function LearningPage({ onSelectTicker }) {
                     </span>
                   </div>
 
-                  <h4 className="text-sm sm:text-base font-bold text-white light:text-slate-900 font-sans mb-2">
+                  <h4 className="text-sm sm:text-base font-bold text-slate-900 font-sans mb-2">
                     {ec.title}
                   </h4>
 
-                  <p className="text-xs text-slate-300 light:text-slate-700 font-mono leading-relaxed mb-3">
+                  <p className="text-xs text-slate-700 font-mono leading-relaxed mb-3">
                     {ec.description}
                   </p>
 
-                  <div className="p-2.5 rounded bg-[#141517] light:bg-slate-50 border border-slate-800 light:border-slate-200 text-[11px] font-mono text-slate-400 light:text-slate-600 mb-3">
-                    <span className="font-bold text-white light:text-slate-900">Why it works: </span>
+                  <div className="p-2.5 rounded bg-slate-50 border border-slate-200 text-[11px] font-mono text-slate-600 mb-3">
+                    <span className="font-bold text-slate-900">Why it works: </span>
                     {ec.impact}
                   </div>
                 </div>
 
                 {ec.link && (
-                  <div className="pt-2 border-t border-slate-800 light:border-slate-200 flex justify-end">
+                  <div className="pt-2 border-t border-slate-200 flex justify-end">
                     <a
                       href={ec.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-xs font-mono font-bold text-[#2962FF] hover:underline"
+                      className="inline-flex items-center gap-1 text-xs font-mono font-bold text-[#2563EB] hover:underline"
                     >
                       <span>Official Website / Resource</span>
                       <ExternalLink className="w-3 h-3" />
@@ -712,37 +711,37 @@ export default function LearningPage({ onSelectTicker }) {
           </div>
 
           {/* High School Year-by-Year Action Plan */}
-          <div className="p-5 sm:p-6 rounded-lg border border-slate-800 light:border-slate-200 bg-[#0C0D0E] light:bg-white shadow-sm">
-            <h4 className="text-base font-bold text-white light:text-[#047857] font-mono mb-4 flex items-center gap-2">
-              <Target className="w-4 h-4 text-[#2962FF]" />
+          <div className="p-5 sm:p-6 rounded-lg border border-slate-200 bg-white shadow-sm">
+            <h4 className="text-base font-bold text-slate-900 font-mono mb-4 flex items-center gap-2">
+              <Target className="w-4 h-4 text-[#2563EB]" />
               <span>High School 9th - 12th Grade Year-by-Year Finance Roadmap</span>
             </h4>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 font-mono text-xs">
-              <div className="p-3.5 rounded-lg bg-[#141517] light:bg-slate-50 border border-slate-800 light:border-slate-200 space-y-1.5">
-                <span className="font-bold text-[#2962FF] uppercase text-[11px] block">9th Grade (Freshman)</span>
-                <p className="text-slate-300 light:text-slate-700 leading-snug">
+              <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-200 space-y-1.5">
+                <span className="font-bold text-[#2563EB] uppercase text-[11px] block">9th Grade (Freshman)</span>
+                <p className="text-slate-700 leading-snug">
                   Build strong math foundation (Geometry/Algebra 2). Learn Python fundamentals and start paper trading on PaperTrade to understand how stocks move.
                 </p>
               </div>
 
-              <div className="p-3.5 rounded-lg bg-[#141517] light:bg-slate-50 border border-slate-800 light:border-slate-200 space-y-1.5">
-                <span className="font-bold text-[#00D09C] uppercase text-[11px] block">10th Grade (Sophomore)</span>
-                <p className="text-slate-300 light:text-slate-700 leading-snug">
+              <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-200 space-y-1.5">
+                <span className="font-bold text-[#16A34A] uppercase text-[11px] block">10th Grade (Sophomore)</span>
+                <p className="text-slate-700 leading-snug">
                   Join or start your school's Investment Club. Compete in the Wharton High School Investment Competition. Take AMC 10 and USACO.
                 </p>
               </div>
 
-              <div className="p-3.5 rounded-lg bg-[#141517] light:bg-slate-50 border border-slate-800 light:border-slate-200 space-y-1.5">
-                <span className="font-bold text-[#F59E0B] uppercase text-[11px] block">11th Grade (Junior)</span>
-                <p className="text-slate-300 light:text-slate-700 leading-snug">
+              <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-200 space-y-1.5">
+                <span className="font-bold text-[#D97706] uppercase text-[11px] block">11th Grade (Junior)</span>
+                <p className="text-slate-700 leading-snug">
                   Execute an independent financial research project or algorithmic backtest. Compete in National Economics Challenge (NEC) and DECA/FBLA State.
                 </p>
               </div>
 
-              <div className="p-3.5 rounded-lg bg-[#141517] light:bg-slate-50 border border-slate-800 light:border-slate-200 space-y-1.5">
-                <span className="font-bold text-[#8B5CF6] uppercase text-[11px] block">12th Grade (Senior)</span>
-                <p className="text-slate-300 light:text-slate-700 leading-snug">
+              <div className="p-3.5 rounded-lg bg-slate-50 border border-slate-200 space-y-1.5">
+                <span className="font-bold text-[#2563EB] uppercase text-[11px] block">12th Grade (Senior)</span>
+                <p className="text-slate-700 leading-snug">
                   Craft college application essays highlighting your hands-on financial leadership, research, and passion. Apply to top target universities!
                 </p>
               </div>

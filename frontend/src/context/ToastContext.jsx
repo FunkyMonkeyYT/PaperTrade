@@ -35,22 +35,22 @@ export function ToastProvider({ children }) {
         {toasts.map((toast) => (
           <div
             key={toast.id}
-            className={`pointer-events-auto p-3.5 rounded-lg border shadow-xl flex items-start gap-3 transition-all duration-200 animate-fadeIn backdrop-blur-md ${
+            className={`pointer-events-auto p-3.5 rounded-lg border shadow-lg flex items-start gap-3 transition-all duration-200 animate-fadeIn ${
               toast.type === 'success'
-                ? 'bg-[#111827]/95 border-[#00D09C]/40 text-[#F9FAFB]'
+                ? 'bg-white border-[#16A34A]/40 text-slate-900'
                 : toast.type === 'error'
-                ? 'bg-[#111827]/95 border-[#EB5B5B]/40 text-[#F9FAFB]'
-                : 'bg-[#111827]/95 border-slate-700/80 text-[#F9FAFB]'
+                ? 'bg-white border-[#DC2626]/40 text-slate-900'
+                : 'bg-white border-slate-200 text-slate-900'
             }`}
           >
             {toast.type === 'success' && (
-              <CheckCircle2 className="w-5 h-5 text-[#00D09C] shrink-0 mt-0.5" />
+              <CheckCircle2 className="w-5 h-5 text-[#16A34A] shrink-0 mt-0.5" />
             )}
             {toast.type === 'error' && (
-              <AlertCircle className="w-5 h-5 text-[#EB5B5B] shrink-0 mt-0.5" />
+              <AlertCircle className="w-5 h-5 text-[#DC2626] shrink-0 mt-0.5" />
             )}
             {toast.type === 'info' && (
-              <Info className="w-5 h-5 text-[#2962FF] shrink-0 mt-0.5" />
+              <Info className="w-5 h-5 text-[#2563EB] shrink-0 mt-0.5" />
             )}
 
             <div className="flex-1 text-xs sm:text-sm font-medium leading-snug">
@@ -59,7 +59,7 @@ export function ToastProvider({ children }) {
 
             <button
               onClick={() => removeToast(toast.id)}
-              className="text-slate-400 hover:text-white p-0.5 rounded transition-colors"
+              className="text-slate-400 hover:text-slate-700 p-0.5 rounded transition-colors cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>

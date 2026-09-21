@@ -68,47 +68,47 @@ export default function ProfileSettingsModal({ isOpen, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn">
-      <div className="max-w-md w-full p-5 sm:p-6 rounded-lg border border-slate-700/80 bg-[#0C0D0E] shadow-2xl relative animate-scaleIn my-auto">
+    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-3 sm:p-4 overflow-y-auto animate-fadeIn">
+      <div className="max-w-md w-full p-5 sm:p-6 rounded-lg border border-slate-200 bg-white shadow-xl relative animate-scaleIn my-auto">
         
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-1.5 rounded-md text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
+          className="absolute top-4 right-4 p-1.5 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors cursor-pointer"
         >
           <X className="w-4 h-4" />
         </button>
 
         {/* Header */}
         <div className="flex items-center gap-3 mb-5">
-          <div className="w-10 h-10 rounded-lg bg-[#2962FF]/15 border border-[#2962FF]/40 flex items-center justify-center text-[#2962FF]">
+          <div className="w-10 h-10 rounded-lg bg-[#2563EB]/10 border border-[#2563EB]/25 flex items-center justify-center text-[#2563EB]">
             <Camera className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-white font-sans">
+            <h3 className="text-base font-bold text-slate-900 font-sans">
               Custom Profile Picture (PFP)
             </h3>
-            <p className="text-xs text-slate-400 font-mono">
+            <p className="text-xs text-slate-500 font-mono">
               Upload any custom image or paste an image URL
             </p>
           </div>
         </div>
 
         {/* Current Avatar Preview */}
-        <div className="flex flex-col items-center justify-center p-4 bg-[#141517] rounded-lg border border-slate-800 mb-4">
+        <div className="flex flex-col items-center justify-center p-4 bg-slate-50 rounded-lg border border-slate-200 mb-4">
           <div className="relative group">
             {previewUrl ? (
               <img
                 src={previewUrl}
                 alt="PFP Preview"
-                className="w-20 h-20 rounded-full object-cover border-2 border-[#2962FF] shadow-lg"
+                className="w-20 h-20 rounded-full object-cover border-2 border-[#2563EB] shadow-sm"
                 onError={() => {
                   toastError('Unable to load image from provided URL');
                   setPreviewUrl('');
                 }}
               />
             ) : (
-              <div className="w-20 h-20 rounded-full bg-[#2962FF] text-white flex items-center justify-center text-2xl font-bold font-mono shadow-lg">
+              <div className="w-20 h-20 rounded-full bg-[#2563EB] text-white flex items-center justify-center text-2xl font-bold font-mono shadow-sm">
                 {(username || 'T').charAt(0).toUpperCase()}
               </div>
             )}
@@ -116,7 +116,7 @@ export default function ProfileSettingsModal({ isOpen, onClose }) {
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="absolute bottom-0 right-0 p-1.5 rounded-full bg-[#2962FF] text-white hover:bg-blue-600 shadow-md transition-transform hover:scale-110 cursor-pointer"
+              className="absolute bottom-0 right-0 p-1.5 rounded-full bg-[#2563EB] text-white hover:bg-blue-700 shadow-sm transition-transform hover:scale-110 cursor-pointer"
               title="Upload from device"
             >
               <Upload className="w-3.5 h-3.5" />
@@ -124,23 +124,23 @@ export default function ProfileSettingsModal({ isOpen, onClose }) {
           </div>
 
           <div className="mt-2 text-center">
-            <span className="text-xs font-mono font-bold text-white">{username || 'Trader'}</span>
+            <span className="text-xs font-mono font-bold text-slate-900">{username || 'Trader'}</span>
             <div className="text-[11px] text-slate-500 font-mono">{email || 'Verified Account'}</div>
           </div>
         </div>
 
         {/* Mode Selector (Upload File vs Paste URL) */}
-        <div className="grid grid-cols-2 p-0.5 bg-[#141517] border border-slate-800 rounded-md mb-4">
+        <div className="grid grid-cols-2 p-0.5 bg-slate-100 border border-slate-200 rounded-md mb-4">
           <button
             type="button"
             onClick={() => setActiveMode('upload')}
             className={`py-1.5 text-xs font-mono font-bold rounded transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
               activeMode === 'upload'
-                ? 'bg-[#2962FF] text-white shadow-sm'
-                : 'text-slate-400 hover:text-white'
+                ? 'bg-[#2563EB] text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <Upload className="w-3 h-3" />
+            <Upload className="w-3.5 h-3.5" />
             <span>Upload File</span>
           </button>
           <button
@@ -148,11 +148,11 @@ export default function ProfileSettingsModal({ isOpen, onClose }) {
             onClick={() => setActiveMode('url')}
             className={`py-1.5 text-xs font-mono font-bold rounded transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
               activeMode === 'url'
-                ? 'bg-[#2962FF] text-white shadow-sm'
-                : 'text-slate-400 hover:text-white'
+                ? 'bg-[#2563EB] text-white shadow-sm'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <Link2 className="w-3 h-3" />
+            <Link2 className="w-3.5 h-3.5" />
             <span>Image URL</span>
           </button>
         </div>
@@ -170,10 +170,10 @@ export default function ProfileSettingsModal({ isOpen, onClose }) {
         {activeMode === 'upload' ? (
           <div
             onClick={() => fileInputRef.current?.click()}
-            className="border-2 border-dashed border-slate-700 hover:border-[#2962FF] bg-[#141517] hover:bg-slate-900/60 p-5 rounded-lg text-center cursor-pointer transition-all mb-4"
+            className="border-2 border-dashed border-slate-300 hover:border-[#2563EB] bg-slate-50 hover:bg-slate-100 p-5 rounded-lg text-center cursor-pointer transition-all mb-4"
           >
             <Upload className="w-7 h-7 text-slate-400 mx-auto mb-2" />
-            <div className="text-xs font-bold text-white font-mono">
+            <div className="text-xs font-bold text-slate-800 font-mono">
               Click to choose an image from your computer
             </div>
             <div className="text-[11px] text-slate-500 font-mono mt-1">
@@ -182,7 +182,7 @@ export default function ProfileSettingsModal({ isOpen, onClose }) {
           </div>
         ) : (
           <div className="mb-4">
-            <label className="block text-[11px] font-mono text-slate-300 font-bold mb-1">
+            <label className="block text-[11px] font-mono text-slate-700 font-bold mb-1">
               Paste Direct Image Link
             </label>
             <div className="flex items-center gap-2">
@@ -194,19 +194,19 @@ export default function ProfileSettingsModal({ isOpen, onClose }) {
                   setPreviewUrl(e.target.value);
                 }}
                 placeholder="https://example.com/my-photo.jpg"
-                className="w-full bg-[#141517] border border-slate-700/80 rounded-md px-3 py-2 text-white font-mono text-xs focus:outline-none focus:border-[#2962FF] transition-all"
+                className="w-full bg-slate-50 border border-slate-300 rounded-md px-3 py-2 text-slate-900 placeholder:text-slate-400 font-mono text-xs focus:outline-none focus:border-[#2563EB] transition-all"
               />
             </div>
           </div>
         )}
 
         {/* Action Buttons */}
-        <div className="flex items-center gap-2 pt-2 border-t border-slate-800">
+        <div className="flex items-center gap-2 pt-2 border-t border-slate-200">
           {previewUrl && (
             <button
               type="button"
               onClick={handleRemoveAvatar}
-              className="p-2 rounded-md bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/30 transition-colors cursor-pointer"
+              className="p-2 rounded-md bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 transition-colors cursor-pointer"
               title="Remove Profile Picture"
             >
               <Trash2 className="w-4 h-4" />
@@ -217,7 +217,7 @@ export default function ProfileSettingsModal({ isOpen, onClose }) {
             type="button"
             onClick={handleSave}
             disabled={isSaving || !previewUrl}
-            className="flex-1 py-2 rounded-md bg-[#2962FF] hover:bg-blue-600 text-white font-mono font-bold text-xs shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
+            className="flex-1 py-2 rounded-md bg-[#2563EB] hover:bg-blue-700 text-white font-mono font-bold text-xs shadow-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
           >
             {isSaving ? (
               <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />

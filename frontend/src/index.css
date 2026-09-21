@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,61 +6,59 @@
 
 @layer base {
   :root {
-    /* Default Dark Mode: Black background, Green profit, Red losses, White/Grey text */
-    --bg-page: #000000;
-    --text-primary: #FFFFFF;
-    --text-secondary: #9CA3AF;
+    /* Flat Clean Minimalist Theme (Option C): #F9FAFB flat background, #2563EB single accent */
+    --bg-page: #F9FAFB;
+    --text-primary: #111827;
+    --text-secondary: #4B5563;
     --text-muted: #6B7280;
-    --card-bg: #0C0D0E;
-    --subpanel-bg: #141517;
-    --border-color: rgba(38, 38, 38, 0.9);
-    --profit-color: #00D09C;
-    --profit-bg: rgba(0, 208, 156, 0.15);
-    --profit-border: rgba(0, 208, 156, 0.35);
-    --loss-color: #EB5B5B;
-    --loss-bg: rgba(235, 91, 91, 0.15);
-    --loss-border: rgba(235, 91, 91, 0.35);
-    --accent-blue: #2962FF;
+    --card-bg: #FFFFFF;
+    --subpanel-bg: #F3F4F6;
+    --border-color: #E5E7EB;
+    --profit-color: #16A34A;
+    --profit-bg: #DCFCE7;
+    --profit-border: #BBF7D0;
+    --loss-color: #DC2626;
+    --loss-bg: #FEE2E2;
+    --loss-border: #FECACA;
+    --accent-blue: #2563EB;
   }
 
   .dark {
-    /* Dark Mode: Pure Black background, Green profit, Red losses, White/Grey text */
-    --bg-page: #000000;
-    --text-primary: #FFFFFF;
-    --text-secondary: #9CA3AF;
-    --text-muted: #6B7280;
-    --card-bg: #0C0D0E;
-    --subpanel-bg: #141517;
-    --border-color: rgba(38, 38, 38, 0.9);
-    --profit-color: #00D09C;
-    --profit-bg: rgba(0, 208, 156, 0.15);
-    --profit-border: rgba(0, 208, 156, 0.35);
-    --loss-color: #EB5B5B;
-    --loss-bg: rgba(235, 91, 91, 0.15);
-    --loss-border: rgba(235, 91, 91, 0.35);
-    --accent-blue: #2962FF;
-  }
-
-  .light {
-    /* Light Mode: White background, Green text, Blue profit, Red losses */
-    --bg-page: #FFFFFF;
-    --text-primary: #047857;
-    --text-secondary: #065F46;
-    --text-muted: #059669;
-    --card-bg: #FAFAFA;
-    --subpanel-bg: #F3F4F6;
-    --border-color: #E5E7EB;
-    --profit-color: #2563EB;
-    --profit-bg: rgba(37, 99, 235, 0.12);
-    --profit-border: rgba(37, 99, 235, 0.3);
+    --bg-page: #0B0F19;
+    --text-primary: #F8FAFC;
+    --text-secondary: #94A3B8;
+    --text-muted: #64748B;
+    --card-bg: #111827;
+    --subpanel-bg: #161F30;
+    --border-color: #1F2937;
+    --profit-color: #16A34A;
+    --profit-bg: rgba(22, 163, 74, 0.15);
+    --profit-border: rgba(22, 163, 74, 0.3);
     --loss-color: #DC2626;
-    --loss-bg: rgba(220, 38, 38, 0.12);
+    --loss-bg: rgba(220, 38, 38, 0.15);
     --loss-border: rgba(220, 38, 38, 0.3);
     --accent-blue: #2563EB;
   }
 
+  .light {
+    --bg-page: #F9FAFB;
+    --text-primary: #111827;
+    --text-secondary: #4B5563;
+    --text-muted: #6B7280;
+    --card-bg: #FFFFFF;
+    --subpanel-bg: #F3F4F6;
+    --border-color: #E5E7EB;
+    --profit-color: #16A34A;
+    --profit-bg: #DCFCE7;
+    --profit-border: #BBF7D0;
+    --loss-color: #DC2626;
+    --loss-bg: #FEE2E2;
+    --loss-border: #FECACA;
+    --accent-blue: #2563EB;
+  }
+
   html {
-    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
     font-size: 14px;
     -webkit-text-size-adjust: 100%;
     overflow-x: hidden;
@@ -84,6 +82,7 @@
     @apply antialiased transition-colors duration-150 text-sm;
     background-color: var(--bg-page);
     color: var(--text-primary);
+    line-height: 1.6;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     overflow-x: hidden;
     width: 100%;
@@ -138,27 +137,25 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Skeleton Loading Pulse Shimmer */
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
+/* Flat Pulse Loading Placeholder (No Gradients) */
+@keyframes flatPulse {
+  0%, 100% {
+    opacity: 1;
   }
-  100% {
-    background-position: 200% 0;
+  50% {
+    opacity: 0.5;
   }
 }
 
 .skeleton-shimmer {
-  background: linear-gradient(90deg, rgba(38, 38, 38, 0.5) 25%, rgba(60, 60, 60, 0.7) 50%, rgba(38, 38, 38, 0.5) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
+  background-color: #E5E7EB;
+  animation: flatPulse 1.5s ease-in-out infinite;
   border-radius: 6px;
 }
 
 .light .skeleton-shimmer {
-  background: linear-gradient(90deg, rgba(229, 231, 235, 0.8) 25%, rgba(209, 213, 219, 1) 50%, rgba(229, 231, 235, 0.8) 75%);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s infinite;
+  background-color: #E5E7EB;
+  animation: flatPulse 1.5s ease-in-out infinite;
 }
 
 /* Clean FinTech Scrollbars */
@@ -193,3 +190,81 @@
   outline: 2px solid var(--accent-blue) !important;
   outline-offset: 1px !important;
 }
+
+/* Option C Flat Dark Mode Rules */
+.dark {
+  color-scheme: dark;
+}
+
+.dark .bg-\[\#F9FAFB\] {
+  background-color: #0B0F19 !important;
+}
+
+.dark .text-\[\#111827\] {
+  color: #F8FAFC !important;
+}
+
+.dark .bg-white {
+  background-color: #111827 !important;
+}
+
+.dark .bg-slate-50 {
+  background-color: #161F30 !important;
+}
+
+.dark .bg-slate-100 {
+  background-color: #1E293B !important;
+}
+
+.dark .border-slate-200 {
+  border-color: #1F2937 !important;
+}
+
+.dark .border-slate-300 {
+  border-color: #374151 !important;
+}
+
+.dark .text-slate-900 {
+  color: #F8FAFC !important;
+}
+
+.dark .text-slate-800 {
+  color: #F1F5F9 !important;
+}
+
+.dark .text-slate-700 {
+  color: #E2E8F0 !important;
+}
+
+.dark .text-slate-600 {
+  color: #94A3B8 !important;
+}
+
+.dark .text-slate-500 {
+  color: #64748B !important;
+}
+
+.dark .hover\:bg-slate-50:hover {
+  background-color: #161F30 !important;
+}
+
+.dark .hover\:bg-slate-100:hover {
+  background-color: #1E293B !important;
+}
+
+.dark .hover\:bg-slate-200:hover {
+  background-color: #334155 !important;
+}
+
+.dark .hover\:text-slate-900:hover {
+  color: #FFFFFF !important;
+}
+
+.dark .divide-slate-200 > :not([hidden]) ~ :not([hidden]) {
+  border-color: #1F2937 !important;
+}
+
+.dark .skeleton-shimmer {
+  background-color: #1F2937 !important;
+}
+

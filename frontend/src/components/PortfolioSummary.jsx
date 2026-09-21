@@ -65,53 +65,53 @@ export default function PortfolioSummary({ portfolio, onSelectTicker, onQuickSel
       <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-3">
         
         {/* Total Equity */}
-        <div className="p-4 rounded-lg border border-slate-800 light:border-slate-200 bg-[#0C0D0E] light:bg-white shadow-sm">
-          <div className="flex items-center justify-between text-slate-400 light:text-[#065F46] mb-1.5 font-mono text-xs font-semibold">
+        <div className="p-4 rounded-lg border border-slate-200 bg-white shadow-sm">
+          <div className="flex items-center justify-between text-slate-500 mb-1.5 font-mono text-xs font-semibold">
             <span className="uppercase tracking-wider">Total Equity</span>
-            <Briefcase className="w-4 h-4 text-[#2962FF]" />
+            <Briefcase className="w-4 h-4 text-[#2563EB]" />
           </div>
-          <div className="text-2xl font-bold font-mono text-white light:text-slate-900 tabular-nums mb-1">
+          <div className="text-2xl font-bold font-mono text-slate-900 tabular-nums mb-1">
             {formatCurrency(totalValue)}
           </div>
           <div className="flex items-center gap-1.5 text-xs font-mono">
             <span className={`font-bold tabular-nums ${totalReturnPct >= 0 ? 'text-profit' : 'text-loss'}`}>
               {totalReturnPct >= 0 ? '+' : ''}{totalReturnPct.toFixed(2)}%
             </span>
-            <span className="text-slate-500 light:text-slate-400 text-[11px]">all-time return</span>
+            <span className="text-slate-500 text-[11px]">all-time return</span>
           </div>
         </div>
 
         {/* Available Cash */}
-        <div className="p-4 rounded-lg border border-slate-800 light:border-slate-200 bg-[#0C0D0E] light:bg-white shadow-sm">
-          <div className="flex items-center justify-between text-slate-400 light:text-[#065F46] mb-1.5 font-mono text-xs font-semibold">
+        <div className="p-4 rounded-lg border border-slate-200 bg-white shadow-sm">
+          <div className="flex items-center justify-between text-slate-500 mb-1.5 font-mono text-xs font-semibold">
             <span className="uppercase tracking-wider">Available Cash</span>
-            <span className="w-2 h-2 rounded-full bg-[#00D09C]" />
+            <span className="w-2 h-2 rounded-full bg-[#16A34A]" />
           </div>
           <div className="text-2xl font-bold font-mono text-profit tabular-nums mb-1">
             {formatCurrency(cash)}
           </div>
-          <div className="text-[11px] font-mono text-slate-400 light:text-slate-500 tabular-nums">
+          <div className="text-[11px] font-mono text-slate-500 tabular-nums">
             {((cash / (totalValue || 1)) * 100).toFixed(1)}% of unified wallet
           </div>
         </div>
 
         {/* Invested Market Value */}
-        <div className="p-4 rounded-lg border border-slate-800 light:border-slate-200 bg-[#0C0D0E] light:bg-white shadow-sm">
-          <div className="flex items-center justify-between text-slate-400 light:text-[#065F46] mb-1.5 font-mono text-xs font-semibold">
+        <div className="p-4 rounded-lg border border-slate-200 bg-white shadow-sm">
+          <div className="flex items-center justify-between text-slate-500 mb-1.5 font-mono text-xs font-semibold">
             <span className="uppercase tracking-wider">Invested Value</span>
-            <Layers className="w-4 h-4 text-[#8B5CF6]" />
+            <Layers className="w-4 h-4 text-[#2563EB]" />
           </div>
-          <div className="text-2xl font-bold font-mono text-white light:text-slate-900 tabular-nums mb-1">
+          <div className="text-2xl font-bold font-mono text-slate-900 tabular-nums mb-1">
             {formatCurrency(invested)}
           </div>
-          <div className="text-[11px] font-mono text-slate-400 light:text-slate-500">
+          <div className="text-[11px] font-mono text-slate-500">
             {allPositions.length} active global position{allPositions.length === 1 ? '' : 's'}
           </div>
         </div>
 
         {/* Realized & Unrealized P&L */}
-        <div className="p-4 rounded-lg border border-slate-800 light:border-slate-200 bg-[#0C0D0E] light:bg-white shadow-sm">
-          <div className="flex items-center justify-between text-slate-400 light:text-[#065F46] mb-1.5 font-mono text-xs font-semibold">
+        <div className="p-4 rounded-lg border border-slate-200 bg-white shadow-sm">
+          <div className="flex items-center justify-between text-slate-500 mb-1.5 font-mono text-xs font-semibold">
             <span className="uppercase tracking-wider">Unrealized P&L</span>
             {unrealizedPnl >= 0 ? (
               <TrendingUp className="w-4 h-4 text-profit" />
@@ -126,7 +126,7 @@ export default function PortfolioSummary({ portfolio, onSelectTicker, onQuickSel
           >
             {unrealizedPnl >= 0 ? '+' : ''}{formatCurrency(unrealizedPnl)}
           </div>
-          <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 light:text-slate-500">
+          <div className="flex items-center justify-between text-[11px] font-mono text-slate-500">
             <span className="tabular-nums">({unrealizedPct >= 0 ? '+' : ''}{unrealizedPct.toFixed(2)}%)</span>
             <span className="tabular-nums">Realized: {formatCurrency(realizedPnl)}</span>
           </div>
@@ -135,23 +135,23 @@ export default function PortfolioSummary({ portfolio, onSelectTicker, onQuickSel
       </div>
 
       {/* Open Holdings Container */}
-      <div className="rounded-lg border border-slate-800 light:border-slate-200 bg-[#0C0D0E] light:bg-white shadow-sm overflow-hidden transition-colors">
-        <div className="px-4 py-3 border-b border-slate-800 light:border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-[#141517] light:bg-slate-50">
+      <div className="rounded-lg border border-slate-200 bg-white shadow-sm overflow-hidden transition-colors">
+        <div className="px-4 py-3 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 bg-slate-50">
           <div className="flex items-center gap-2">
-            <PieChart className="w-4 h-4 text-[#2962FF]" />
-            <h3 className="text-xs sm:text-sm font-bold text-white light:text-slate-900 uppercase tracking-wider font-mono">
+            <PieChart className="w-4 h-4 text-[#2563EB]" />
+            <h3 className="text-xs sm:text-sm font-bold text-slate-900 uppercase tracking-wider font-mono">
               Open Positions ({filteredPositions.length})
             </h3>
           </div>
 
           {/* Filter Tabs: All Global vs Active Market */}
-          <div className="flex items-center gap-1 bg-[#0C0D0E] light:bg-white p-0.5 rounded-md border border-slate-800 light:border-slate-300">
+          <div className="flex items-center gap-1 bg-white p-0.5 rounded-md border border-slate-200">
             <button
               onClick={() => setFilterMode('ALL')}
               className={`px-2.5 py-1 rounded text-xs font-mono font-bold transition-all cursor-pointer ${
                 filterMode === 'ALL'
-                  ? 'bg-[#2962FF] text-white shadow-sm'
-                  : 'text-slate-400 light:text-slate-600 hover:text-white'
+                  ? 'bg-[#2563EB] text-white shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               All Global ({allPositions.length})
@@ -160,8 +160,8 @@ export default function PortfolioSummary({ portfolio, onSelectTicker, onQuickSel
               onClick={() => setFilterMode('ACTIVE_MARKET')}
               className={`px-2.5 py-1 rounded text-xs font-mono font-bold transition-all flex items-center gap-1 cursor-pointer ${
                 filterMode === 'ACTIVE_MARKET'
-                  ? 'bg-[#2962FF] text-white shadow-sm'
-                  : 'text-slate-400 light:text-slate-600 hover:text-white'
+                  ? 'bg-[#2563EB] text-white shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <span>{currentCountryObj.flag}</span>
@@ -172,20 +172,20 @@ export default function PortfolioSummary({ portfolio, onSelectTicker, onQuickSel
 
         {filteredPositions.length === 0 ? (
           /* FinTech Empty State Card */
-          <div className="p-10 sm:p-14 text-center text-slate-400 flex flex-col items-center justify-center">
-            <div className="w-14 h-14 rounded-full bg-[#141517] light:bg-slate-100 border border-slate-800 light:border-slate-300 flex items-center justify-center text-slate-400 mb-3.5 shadow-inner">
+          <div className="p-10 sm:p-14 text-center text-slate-500 flex flex-col items-center justify-center">
+            <div className="w-14 h-14 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 mb-3.5">
               <Briefcase className="w-6 h-6" />
             </div>
-            <h4 className="text-base font-bold text-white light:text-slate-900 font-sans">
+            <h4 className="text-base font-bold text-slate-900 font-sans">
               No open positions in your portfolio yet
             </h4>
-            <p className="text-xs text-slate-400 light:text-slate-500 mt-1 max-w-md font-mono">
+            <p className="text-xs text-slate-500 mt-1 max-w-md font-mono">
               Search any company across top 10 international markets and place your first simulated order to begin.
             </p>
             {onOpenSearch && (
               <button
                 onClick={onOpenSearch}
-                className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-md bg-[#2962FF] hover:bg-blue-600 text-white font-mono font-bold text-xs shadow-md transition-all cursor-pointer"
+                className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-md bg-[#2563EB] hover:bg-blue-700 text-white font-mono font-bold text-xs shadow-sm transition-all cursor-pointer"
               >
                 <Search className="w-3.5 h-3.5" />
                 <span>Search Global Stocks (Ctrl + K)</span>
@@ -197,7 +197,7 @@ export default function PortfolioSummary({ portfolio, onSelectTicker, onQuickSel
             {/* Desktop / Tablet Dense Financial Table with Right-Aligned Numbers */}
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs font-mono">
-                <thead className="bg-[#141517] light:bg-slate-50 text-slate-400 light:text-slate-600 border-b border-slate-800 light:border-slate-200 uppercase tracking-wider text-[11px]">
+                <thead className="bg-slate-50 text-slate-600 border-b border-slate-200 uppercase tracking-wider text-[11px]">
                   <tr>
                     <th className="py-2.5 px-4">Market</th>
                     <th className="py-2.5 px-3">Asset</th>
@@ -210,7 +210,7 @@ export default function PortfolioSummary({ portfolio, onSelectTicker, onQuickSel
                     <th className="py-2.5 px-4 text-right">Action</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/50 light:divide-slate-200">
+                <tbody className="divide-y divide-slate-200">
                   {filteredPositions.map((pos) => {
                     const isPositive = pos.unrealized_pnl >= 0;
                     const posTickerCurr = getCurrencyFromTicker(pos.ticker);
@@ -225,28 +225,28 @@ export default function PortfolioSummary({ portfolio, onSelectTicker, onQuickSel
                     return (
                       <tr
                         key={pos.id}
-                        className="hover:bg-[#141517]/60 light:hover:bg-slate-50 transition-colors cursor-pointer"
+                        className="hover:bg-slate-50 transition-colors cursor-pointer"
                         onClick={() => onSelectTicker(pos.ticker)}
                       >
                         <td className="py-2.5 px-4">
-                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#141517] light:bg-slate-100 border border-slate-700/60 light:border-slate-300 text-[11px] font-bold">
+                          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-[11px] font-bold">
                             <span>{tag.flag}</span>
-                            <span className="text-slate-400 light:text-slate-600">{tag.label}</span>
+                            <span className="text-slate-600">{tag.label}</span>
                           </span>
                         </td>
-                        <td className="py-2.5 px-3 font-bold text-white light:text-slate-900 text-sm">
-                          <span className="text-[#2962FF] hover:underline">{pos.ticker}</span>
+                        <td className="py-2.5 px-3 font-bold text-slate-900 text-sm">
+                          <span className="text-[#2563EB] hover:underline">{pos.ticker}</span>
                         </td>
-                        <td className="py-2.5 px-3 font-semibold text-slate-300 light:text-slate-700 text-right tabular-nums">
+                        <td className="py-2.5 px-3 font-semibold text-slate-700 text-right tabular-nums">
                           {pos.shares}
                         </td>
-                        <td className="py-2.5 px-3 text-slate-400 light:text-slate-600 text-right tabular-nums">
+                        <td className="py-2.5 px-3 text-slate-600 text-right tabular-nums">
                           {sym}{entryPrice.toFixed(2)}
                         </td>
-                        <td className="py-2.5 px-3 font-bold text-white light:text-slate-900 text-right tabular-nums">
+                        <td className="py-2.5 px-3 font-bold text-slate-900 text-right tabular-nums">
                           {sym}{currentPrice.toFixed(2)}
                         </td>
-                        <td className="py-2.5 px-3 font-bold text-slate-200 light:text-slate-800 text-right tabular-nums">
+                        <td className="py-2.5 px-3 font-bold text-slate-800 text-right tabular-nums">
                           {sym}{marketVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                         </td>
                         <td className="py-2.5 px-3 text-right tabular-nums">
@@ -256,13 +256,13 @@ export default function PortfolioSummary({ portfolio, onSelectTicker, onQuickSel
                             <span className="text-[11px]">({isPositive ? '+' : ''}{pos.unrealized_pnl_percent.toFixed(2)}%)</span>
                           </div>
                         </td>
-                        <td className="py-2.5 px-3 text-slate-400 light:text-slate-600 text-right tabular-nums">
+                        <td className="py-2.5 px-3 text-slate-600 text-right tabular-nums">
                           {pos.allocation_percent ? `${pos.allocation_percent}%` : 'N/A'}
                         </td>
                         <td className="py-2.5 px-4 text-right" onClick={(e) => e.stopPropagation()}>
                           <button
                             onClick={() => onQuickSell(pos.ticker, pos.shares)}
-                            className="px-2.5 py-1 rounded bg-red-500/15 hover:bg-red-500/25 text-red-400 border border-red-500/30 text-xs font-bold transition-colors cursor-pointer"
+                            className="px-2.5 py-1 rounded bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-xs font-bold transition-colors cursor-pointer"
                           >
                             Sell
                           </button>

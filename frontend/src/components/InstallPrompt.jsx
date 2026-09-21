@@ -69,17 +69,17 @@ export default function InstallPrompt({ variant = 'navbar' }) {
         <button
           type="button"
           onClick={handleInstallClick}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-gradient-to-r from-cyan-500/15 to-blue-500/15 hover:from-cyan-500/25 hover:to-blue-500/25 border border-cyan-500/40 text-cyan-400 hover:text-cyan-300 font-mono text-xs font-bold transition-all cursor-pointer shadow-sm hover:shadow-cyan-500/10 group"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-md bg-[#2962FF]/15 hover:bg-[#2962FF]/25 border border-[#2962FF]/40 text-[#2962FF] hover:text-white font-mono text-xs font-bold transition-all cursor-pointer shadow-sm group"
           title="Install PaperTrade Desktop App (PWA)"
         >
-          <Monitor className="w-3.5 h-3.5 text-cyan-400 group-hover:scale-110 transition-transform" />
+          <Monitor className="w-3.5 h-3.5 text-[#2962FF] group-hover:scale-110 transition-transform" />
           <span className="hidden sm:inline">Install App</span>
         </button>
       )}
 
       {/* Guidance Modal when native prompt isn't directly triggered (e.g. Chrome already loaded, or iOS/Edge) */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fadeIn">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 animate-fadeIn">
           <div className="bg-[#0e131f] border border-slate-700/90 rounded-xl max-w-md w-full p-6 shadow-2xl relative text-left">
             <button
               onClick={() => setShowModal(false)}
@@ -89,7 +89,7 @@ export default function InstallPrompt({ variant = 'navbar' }) {
             </button>
 
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/20">
+              <div className="w-12 h-12 rounded-xl bg-[#2962FF] flex items-center justify-center shadow-lg">
                 <Monitor className="w-6 h-6 text-white" />
               </div>
               <div>

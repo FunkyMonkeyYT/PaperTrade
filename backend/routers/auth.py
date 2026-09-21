@@ -129,7 +129,7 @@ def register_user(req: RegisterRequest, db: Session = Depends(get_db)):
         raise
     except Exception as e:
         logger.error(f"Registration error for {clean_username}: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Registration failed: {str(e)}")
+        raise HTTPException(status_code=500, detail="Registration failed. Please try again later.")
 
 
 @router.post("/google", response_model=AuthTokenResponse)
@@ -161,7 +161,7 @@ def google_auth_login(req: GoogleAuthRequest, db: Session = Depends(get_db)):
         )
     except Exception as e:
         logger.error(f"Google auth login error: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Google authentication failed: {str(e)}")
+        raise HTTPException(status_code=500, detail="Google authentication failed. Please try again later.")
 
 
 @router.post("/login", response_model=AuthTokenResponse)
@@ -276,7 +276,7 @@ def complete_onboarding(
         return format_user_profile(user)
     except Exception as e:
         logger.error(f"Onboarding error for user {user.username}: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to complete onboarding: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to complete onboarding. Please try again later.")
 
 
 @router.get("/market-profiles", response_model=List[MarketProfileItem])
@@ -290,7 +290,7 @@ def get_market_profiles():
         return QuantEngine.get_all_market_profiles()
     except Exception as e:
         logger.error(f"Failed to fetch market profiles: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to fetch market profiles: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to fetch market profiles.")
 
 
 @router.get("/market-status/{country_code}", response_model=MarketStatusInfo)
@@ -300,4 +300,4 @@ def get_market_status_by_country(country_code: str):
         return QuantEngine.get_market_status(country_code)
     except Exception as e:
         logger.error(f"Failed to fetch market status for {country_code}: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to fetch market status: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to fetch market status.")

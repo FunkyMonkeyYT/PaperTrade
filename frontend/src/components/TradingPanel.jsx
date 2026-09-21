@@ -100,20 +100,20 @@ export default function TradingPanel({
   };
 
   return (
-    <div className="p-4 sm:p-5 rounded-lg border border-slate-800 light:border-slate-200 bg-[#0C0D0E] light:bg-white shadow-sm flex flex-col justify-between transition-colors">
+    <div className="p-4 sm:p-5 rounded-lg border border-slate-200 bg-white shadow-sm flex flex-col justify-between transition-colors">
       
       <div>
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-800/80 light:border-slate-200 pb-3 mb-3.5">
+        <div className="flex items-center justify-between border-b border-slate-200 pb-3 mb-3.5">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-md bg-[#2962FF]/15 border border-[#2962FF]/30 flex items-center justify-center">
-              <ShoppingCart className="w-3.5 h-3.5 text-[#2962FF]" />
+            <div className="w-7 h-7 rounded-md bg-[#2563EB]/10 border border-[#2563EB]/25 flex items-center justify-center">
+              <ShoppingCart className="w-3.5 h-3.5 text-[#2563EB]" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-white light:text-slate-900 tracking-tight">
+              <h3 className="text-sm font-bold text-slate-900 tracking-tight">
                 Order Execution
               </h3>
-              <p className="text-[11px] text-slate-400 light:text-[#065F46] font-mono">Market Order ({activeCurrency})</p>
+              <p className="text-[11px] text-slate-500 font-mono">Market Order ({activeCurrency})</p>
             </div>
           </div>
 
@@ -123,14 +123,14 @@ export default function TradingPanel({
         </div>
 
         {/* Buy / Sell Segmented Control */}
-        <div className="grid grid-cols-2 p-1 bg-[#141517] light:bg-slate-100 rounded-md border border-slate-800 light:border-slate-300 mb-3.5">
+        <div className="grid grid-cols-2 p-1 bg-slate-100 rounded-md border border-slate-200 mb-3.5">
           <button
             type="button"
             onClick={() => setOrderType('BUY')}
             className={`py-1.5 rounded text-xs font-mono font-bold transition-all cursor-pointer ${
               orderType === 'BUY'
-                ? 'bg-profit-badge shadow-sm font-extrabold'
-                : 'text-slate-400 light:text-slate-600 hover:text-white'
+                ? 'bg-profit-badge text-profit shadow-sm font-extrabold'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             BUY (Long)
@@ -140,8 +140,8 @@ export default function TradingPanel({
             onClick={() => setOrderType('SELL')}
             className={`py-1.5 rounded text-xs font-mono font-bold transition-all cursor-pointer ${
               orderType === 'SELL'
-                ? 'bg-loss-badge shadow-sm font-extrabold'
-                : 'text-slate-400 light:text-slate-600 hover:text-white'
+                ? 'bg-loss-badge text-loss shadow-sm font-extrabold'
+                : 'text-slate-600 hover:text-slate-900'
             }`}
           >
             SELL (Close)
@@ -153,9 +153,9 @@ export default function TradingPanel({
           
           {/* Shares Input with Stepper */}
           <div>
-            <div className="flex justify-between text-xs text-slate-400 light:text-[#065F46] mb-1 font-mono">
+            <div className="flex justify-between text-xs text-slate-500 mb-1 font-mono">
               <span>Shares (Qty)</span>
-              <span className="font-semibold text-slate-300 light:text-slate-800">
+              <span className="font-semibold text-slate-800">
                 {orderType === 'BUY' ? `Max: ${maxBuyShares}` : `Owned: ${ownedShares}`}
               </span>
             </div>
@@ -163,7 +163,7 @@ export default function TradingPanel({
               <button
                 type="button"
                 onClick={() => setShares(Math.max(1, numShares - 1).toString())}
-                className="w-9 h-9 rounded-md bg-[#141517] light:bg-slate-100 hover:bg-slate-800 light:hover:bg-slate-200 border border-slate-700/80 light:border-slate-300 text-base font-bold font-mono text-slate-300 light:text-slate-800 transition-all flex items-center justify-center shrink-0 cursor-pointer"
+                className="w-9 h-9 rounded-md bg-slate-100 hover:bg-slate-200 border border-slate-300 text-base font-bold font-mono text-slate-800 transition-all flex items-center justify-center shrink-0 cursor-pointer"
               >
                 -
               </button>
@@ -175,12 +175,12 @@ export default function TradingPanel({
                 value={shares}
                 onChange={(e) => setShares(e.target.value)}
                 placeholder="1"
-                className="w-full text-center bg-[#141517] light:bg-slate-100 border border-slate-700/80 light:border-slate-300 rounded-md px-3 py-1.5 text-white light:text-slate-900 font-mono font-bold text-sm focus:outline-none focus:border-[#2962FF] tabular-nums"
+                className="w-full text-center bg-slate-50 border border-slate-300 rounded-md px-3 py-1.5 text-slate-900 font-mono font-bold text-sm focus:outline-none focus:border-[#2563EB] tabular-nums"
               />
               <button
                 type="button"
                 onClick={() => setShares((numShares + 1).toString())}
-                className="w-9 h-9 rounded-md bg-[#141517] light:bg-slate-100 hover:bg-slate-800 light:hover:bg-slate-200 border border-slate-700/80 light:border-slate-300 text-base font-bold font-mono text-slate-300 light:text-slate-800 transition-all flex items-center justify-center shrink-0 cursor-pointer"
+                className="w-9 h-9 rounded-md bg-slate-100 hover:bg-slate-200 border border-slate-300 text-base font-bold font-mono text-slate-800 transition-all flex items-center justify-center shrink-0 cursor-pointer"
               >
                 +
               </button>
@@ -194,7 +194,7 @@ export default function TradingPanel({
                 key={pct}
                 type="button"
                 onClick={() => handlePercentageSelect(pct)}
-                className="text-[11px] font-mono py-1 rounded-md bg-[#141517] light:bg-slate-100 hover:bg-slate-800 light:hover:bg-slate-200 text-slate-300 light:text-slate-800 border border-slate-800 light:border-slate-300 transition-colors font-bold cursor-pointer"
+                className="text-[11px] font-mono py-1 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 transition-colors font-bold cursor-pointer"
               >
                 {pct * 100}%
               </button>
@@ -202,22 +202,22 @@ export default function TradingPanel({
           </div>
 
           {/* Execution Cost Calculation */}
-          <div className="bg-[#141517] light:bg-slate-100 rounded-md p-3 border border-slate-800 light:border-slate-300 space-y-1.5 text-xs font-mono">
-            <div className="flex justify-between text-slate-400 light:text-slate-600">
+          <div className="bg-slate-50 rounded-md p-3 border border-slate-200 space-y-1.5 text-xs font-mono">
+            <div className="flex justify-between text-slate-500">
               <span>Market Price:</span>
-              <span className="text-white light:text-slate-900 font-bold tabular-nums">
+              <span className="text-slate-900 font-bold tabular-nums">
                 {sym}{effectivePrice.toFixed(2)}
               </span>
             </div>
-            <div className="flex justify-between text-slate-400 light:text-slate-600">
+            <div className="flex justify-between text-slate-500">
               <span>Order Amount:</span>
               <span className={`font-bold tabular-nums ${orderType === 'BUY' ? 'text-profit' : 'text-loss'}`}>
                 {sym}{totalCost.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </span>
             </div>
-            <div className="flex justify-between text-slate-500 border-t border-slate-800/80 light:border-slate-200 pt-1.5 text-[11px]">
+            <div className="flex justify-between text-slate-500 border-t border-slate-200 pt-1.5 text-[11px]">
               <span>Available Cash:</span>
-              <span className="text-slate-300 light:text-slate-800 font-semibold tabular-nums">
+              <span className="text-slate-800 font-semibold tabular-nums">
                 {formatCurrency(cash)}
               </span>
             </div>
@@ -227,10 +227,10 @@ export default function TradingPanel({
           <button
             type="submit"
             disabled={isSubmitting || numShares <= 0}
-            className={`w-full py-2.5 rounded-md font-bold font-mono text-sm tracking-wide transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer ${
+            className={`w-full py-2.5 rounded-md font-bold font-mono text-sm tracking-wide transition-all shadow-sm flex items-center justify-center gap-2 cursor-pointer ${
               orderType === 'BUY'
-                ? 'bg-[#00D09C] light:bg-[#2563EB] text-black light:text-white shadow-sm'
-                : 'bg-[#EB5B5B] light:bg-[#DC2626] text-white shadow-sm'
+                ? 'bg-[#2563EB] hover:bg-blue-700 text-white'
+                : 'bg-[#DC2626] hover:bg-red-700 text-white'
             } disabled:opacity-50 disabled:cursor-not-allowed`}
           >
             {isSubmitting ? (
@@ -248,8 +248,8 @@ export default function TradingPanel({
       </div>
 
       {/* Safety info footer */}
-      <div className="mt-3 pt-2.5 border-t border-slate-800/80 light:border-slate-200 text-[11px] text-slate-500 text-center font-mono">
-        Paper Trading Mode • Instant Virtual Fill (Hotkeys: <span className="text-slate-400">B</span>)
+      <div className="mt-3 pt-2.5 border-t border-slate-200 text-[11px] text-slate-500 text-center font-mono">
+        Paper Trading Mode • Instant Virtual Fill (Hotkeys: <span className="text-slate-700 font-bold">B</span>)
       </div>
 
     </div>

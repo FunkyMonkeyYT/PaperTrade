@@ -4,21 +4,21 @@ const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
   const [theme, setTheme] = useState(() => {
-    return localStorage.getItem('papertrade_theme') || 'dark';
+    return localStorage.getItem('papertrade_theme') || 'light';
   });
 
   useEffect(() => {
     const root = document.documentElement;
-    if (theme === 'light') {
+    if (theme === 'dark') {
+      root.classList.add('dark');
+      root.classList.remove('light');
+      document.body.style.backgroundColor = '#0B0F19';
+      document.body.style.color = '#F8FAFC';
+    } else {
       root.classList.remove('dark');
       root.classList.add('light');
-      document.body.style.backgroundColor = '#FFFFFF';
-      document.body.style.color = '#047857';
-    } else {
-      root.classList.remove('light');
-      root.classList.add('dark');
-      document.body.style.backgroundColor = '#000000';
-      document.body.style.color = '#FFFFFF';
+      document.body.style.backgroundColor = '#F9FAFB';
+      document.body.style.color = '#111827';
     }
     localStorage.setItem('papertrade_theme', theme);
   }, [theme]);

@@ -131,7 +131,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0B0F19] text-[#F9FAFB] flex flex-col selection:bg-[#2962FF] selection:text-white transition-colors duration-150">
+    <div className="min-h-screen bg-[#F9FAFB] dark:bg-[#0B0F19] text-[#111827] dark:text-[#F8FAFC] flex flex-col selection:bg-[#2563EB] selection:text-white transition-colors duration-150">
       
       {/* Top Navbar */}
       <Navbar

@@ -1,4 +1,5 @@
-from pydantic import BaseModel, Field
+import re
+from pydantic import BaseModel, Field, field_validator
 from typing import List, Optional, Dict, Any
 from datetime import datetime
 
@@ -82,10 +83,30 @@ class StockMetricsResponse(BaseModel):
     cached: bool = False
     timestamp: str
 
+
+# ---------------------------------------------------------------------------
+# Input schemas with strict validation
+# ---------------------------------------------------------------------------
+
+# Reusable regex: alphanumeric + basic punctuation, no script injection
+_SAFE_TEXT_RE = re.compile(r"^[a-zA-Z0-9 _.@+\-]+$")
+_TICKER_RE = re.compile(r"^[A-Z0-9\.\-\^=]+$")
+
+
 class OrderRequest(BaseModel):
-    ticker: str
+    ticker: str = Field(..., max_length=20)
     order_type: str = Field(..., pattern="^(BUY|SELL|buy|sell)$")
-    shares: float = Field(..., gt=0, description="Number of shares to trade")
+    shares: float = Field(..., gt=0, le=1000000, description="Number of shares to trade")
+
+    @field_validator("ticker")
+    @classmethod
+    def validate_ticker(cls, v: str) -> str:
+        v = v.strip().upper()
+        if not v or len(v) > 20:
+            raise ValueError("Ticker must be 1-20 characters.")
+        if not _TICKER_RE.match(v):
+            raise ValueError("Ticker contains invalid characters.")
+        return v
 
 class OrderResponse(BaseModel):
     transaction_id: int
@@ -146,36 +167,70 @@ class SearchResultItem(BaseModel):
 
 class RegisterRequest(BaseModel):
     username: str = Field(..., min_length=3, max_length=50, description="Unique alphanumeric username")
-    password: str = Field(..., min_length=6, description="Account password")
-    email: Optional[str] = Field(None, description="Optional email address")
-    avatar_url: Optional[str] = Field(None, description="Avatar image URL")
-    default_country: Optional[str] = Field("IN", description="Default trading market (IN, US, GB, JP, EU, HK, CA, AU, CH, GLOBAL)")
-    default_currency: Optional[str] = Field(None, description="Default currency")
+    password: str = Field(..., min_length=6, max_length=128, description="Account password")
+    email: Optional[str] = Field(None, max_length=255, description="Optional email address")
+    avatar_url: Optional[str] = Field(None, max_length=2048, description="Avatar image URL")
+    default_country: Optional[str] = Field("IN", max_length=10, description="Default trading market")
+    default_currency: Optional[str] = Field(None, max_length=10, description="Default currency")
+
+    @field_validator("username")
+    @classmethod
+    def validate_username(cls, v: str) -> str:
+        v = v.strip()
+        if not re.match(r"^[a-zA-Z0-9_.\-]+$", v):
+            raise ValueError("Username can only contain letters, numbers, underscores, dots, and hyphens.")
+        return v
+
+    @field_validator("email")
+    @classmethod
+    def validate_email(cls, v: Optional[str]) -> Optional[str]:
+        if v is None or not v.strip():
+            return None
+        v = v.strip().lower()
+        if not re.match(r"^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$", v):
+            raise ValueError("Invalid email format.")
+        return v
 
 class GoogleAuthRequest(BaseModel):
-    google_id: str = Field(...)
-    email: str = Field(...)
-    name: Optional[str] = None
-    avatar_url: Optional[str] = None
-    default_country: Optional[str] = "IN"
+    google_id: str = Field(..., max_length=255)
+    email: str = Field(..., max_length=255)
+    name: Optional[str] = Field(None, max_length=100)
+    avatar_url: Optional[str] = Field(None, max_length=2048)
+    default_country: Optional[str] = Field("IN", max_length=10)
+
+    @field_validator("email")
+    @classmethod
+    def validate_email(cls, v: str) -> str:
+        v = v.strip().lower()
+        if not re.match(r"^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$", v):
+            raise ValueError("Invalid email format.")
+        return v
 
 class LoginRequest(BaseModel):
-    username_or_email: str = Field(..., description="Username or email address")
-    password: str = Field(..., description="Account password")
+    username_or_email: str = Field(..., max_length=255, description="Username or email address")
+    password: str = Field(..., max_length=128, description="Account password")
 
 class ChangePasswordRequest(BaseModel):
-    old_password: str = Field(...)
-    new_password: str = Field(..., min_length=6)
+    old_password: str = Field(..., max_length=128)
+    new_password: str = Field(..., min_length=6, max_length=128)
 
 class EmailLoginRequest(BaseModel):
-    email: str = Field(..., description="User email for persistent account session")
+    email: str = Field(..., max_length=255, description="User email for persistent account session")
+
+    @field_validator("email")
+    @classmethod
+    def validate_email(cls, v: str) -> str:
+        v = v.strip().lower()
+        if not re.match(r"^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$", v):
+            raise ValueError("Invalid email format.")
+        return v
 
 class OnboardingRequest(BaseModel):
-    country: str = Field("IN", description="Primary trading country: IN, US, GB, JP, EU, HK, CA, AU, CH, GLOBAL")
-    currency: Optional[str] = None
+    country: str = Field("IN", max_length=10, description="Primary trading country")
+    currency: Optional[str] = Field(None, max_length=10)
 
 class AvatarUpdateRequest(BaseModel):
-    avatar_url: str
+    avatar_url: str = Field(..., max_length=2048)
 
 class UserProfileResponse(BaseModel):
     id: int
@@ -234,4 +289,3 @@ class MarketProfileItem(BaseModel):
     market_health_ticker: str
     status: MarketStatusInfo
     popular_tickers: List[SearchResultItem]
-

@@ -17,7 +17,7 @@ def get_market_indices():
         return QuantEngine.get_market_indices()
     except Exception as e:
         logger.error(f"Failed to fetch market indices: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to fetch market indices: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to fetch market indices.")
 
 @router.get("/search", response_model=List[SearchResultItem])
 def search_stocks(
@@ -30,7 +30,7 @@ def search_stocks(
         return [SearchResultItem(**item) for item in results]
     except Exception as e:
         logger.error(f"Search failed for query '{q}', country '{country}': {e}")
-        raise HTTPException(status_code=500, detail=f"Search failed: {str(e)}")
+        raise HTTPException(status_code=500, detail="Search failed. Please try again.")
 
 
 @router.get("/{ticker}/metrics", response_model=StockMetricsResponse)
@@ -50,7 +50,7 @@ def get_stock_metrics(
         raise HTTPException(status_code=404, detail=str(ve))
     except Exception as e:
         logger.error(f"Error fetching metrics for ticker '{ticker}': {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Failed to calculate quantitative metrics: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to calculate stock metrics.")
 
 @router.get("/{ticker}/export")
 def export_stock_data(
@@ -77,4 +77,4 @@ def export_stock_data(
         raise HTTPException(status_code=404, detail=str(ve))
     except Exception as e:
         logger.error(f"Export failed for ticker '{ticker}': {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Export failed: {str(e)}")
+        raise HTTPException(status_code=500, detail="Export failed. Please try again.")

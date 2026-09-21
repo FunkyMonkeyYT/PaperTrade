@@ -82,11 +82,11 @@ export default function SearchModal({ isOpen, onClose, onSelectTicker }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-start justify-center p-3 sm:p-6 pt-12 sm:pt-20 animate-fadeIn">
-      <div className="max-w-2xl w-full bg-[#111827] border border-slate-700/80 rounded-lg shadow-2xl overflow-hidden flex flex-col max-h-[80vh] animate-scaleIn">
+    <div className="fixed inset-0 z-50 bg-black/50 flex items-start justify-center p-3 sm:p-6 pt-12 sm:pt-20 animate-fadeIn">
+      <div className="max-w-2xl w-full bg-white border border-slate-200 rounded-lg shadow-xl overflow-hidden flex flex-col max-h-[80vh] animate-scaleIn">
         
         {/* Search Header Input */}
-        <div className="p-3 sm:p-4 border-b border-slate-800 flex items-center gap-3 bg-[#161B26]">
+        <div className="p-3 sm:p-4 border-b border-slate-200 flex items-center gap-3 bg-slate-50">
           <Search className="w-5 h-5 text-slate-400 shrink-0" />
           <input
             ref={inputRef}
@@ -94,29 +94,29 @@ export default function SearchModal({ isOpen, onClose, onSelectTicker }) {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search all global stocks (e.g. AAPL, RELIANCE, TSLA, 7203.T, BTC)..."
-            className="w-full bg-transparent text-sm sm:text-base font-mono text-[#F9FAFB] placeholder:text-slate-500 focus:outline-none"
+            className="w-full bg-transparent text-sm sm:text-base font-mono text-slate-900 placeholder:text-slate-400 focus:outline-none"
           />
           {query && (
             <button
               onClick={() => setQuery('')}
-              className="text-slate-400 hover:text-white p-1 rounded-md"
+              className="text-slate-400 hover:text-slate-600 p-1 rounded-md cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
           )}
-          <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono text-slate-400 bg-slate-800 border border-slate-700">
+          <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono text-slate-600 bg-slate-200 border border-slate-300">
             ESC
           </span>
         </div>
 
         {/* Top 10 Major Markets Filter Pills */}
-        <div className="px-3 sm:px-4 py-2 bg-[#111827] border-b border-slate-800/80 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+        <div className="px-3 sm:px-4 py-2 bg-white border-b border-slate-200 flex items-center gap-1.5 overflow-x-auto no-scrollbar">
           <button
             onClick={() => setSelectedMarketTab('ALL')}
-            className={`px-2.5 py-1 rounded-md text-xs font-mono font-medium transition-all shrink-0 ${
+            className={`px-2.5 py-1 rounded-md text-xs font-mono font-medium transition-all shrink-0 cursor-pointer ${
               selectedMarketTab === 'ALL'
-                ? 'bg-[#2962FF] text-white shadow-sm'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                ? 'bg-[#2563EB] text-white shadow-sm font-bold'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             All Markets
@@ -125,10 +125,10 @@ export default function SearchModal({ isOpen, onClose, onSelectTicker }) {
             <button
               key={c.code}
               onClick={() => setSelectedMarketTab(c.code)}
-              className={`px-2.5 py-1 rounded-md text-xs font-mono transition-all shrink-0 flex items-center gap-1.5 ${
+              className={`px-2.5 py-1 rounded-md text-xs font-mono transition-all shrink-0 flex items-center gap-1.5 cursor-pointer ${
                 selectedMarketTab === c.code
-                  ? 'bg-[#2962FF] text-white font-bold'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                  ? 'bg-[#2563EB] text-white font-bold shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
               <span>{c.flag}</span>
@@ -138,7 +138,7 @@ export default function SearchModal({ isOpen, onClose, onSelectTicker }) {
         </div>
 
         {/* Results List */}
-        <div className="overflow-y-auto divide-y divide-slate-800/60 flex-1 p-2">
+        <div className="overflow-y-auto divide-y divide-slate-100 flex-1 p-2">
           {loading ? (
             <div className="p-8 space-y-3">
               {[1, 2, 3, 4].map((i) => (
@@ -147,8 +147,8 @@ export default function SearchModal({ isOpen, onClose, onSelectTicker }) {
             </div>
           ) : results.length === 0 ? (
             <div className="p-10 text-center text-slate-500">
-              <Search className="w-8 h-8 mx-auto mb-2 opacity-50 text-slate-600" />
-              <p className="text-sm font-medium text-slate-300">No assets found matching "{query}"</p>
+              <Search className="w-8 h-8 mx-auto mb-2 opacity-40 text-slate-400" />
+              <p className="text-sm font-medium text-slate-700">No assets found matching "{query}"</p>
               <p className="text-xs text-slate-500 mt-1 font-mono">
                 Try searching by company name, ticker code, or standard exchange identifier.
               </p>
@@ -163,8 +163,8 @@ export default function SearchModal({ isOpen, onClose, onSelectTicker }) {
                   onMouseEnter={() => setSelectedIndex(idx)}
                   className={`p-2.5 sm:p-3 rounded-md transition-all cursor-pointer flex items-center justify-between group ${
                     isSelected
-                      ? 'bg-[#161B26] border border-slate-700/80'
-                      : 'hover:bg-slate-800/30'
+                      ? 'bg-slate-50 border border-slate-200'
+                      : 'hover:bg-slate-50 border border-transparent'
                   }`}
                 >
                   <div className="flex items-center gap-3">
@@ -173,14 +173,14 @@ export default function SearchModal({ isOpen, onClose, onSelectTicker }) {
                     </span>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-mono font-bold text-sm text-[#F9FAFB] group-hover:text-[#2962FF] transition-colors">
+                        <span className="font-mono font-bold text-sm text-slate-900 group-hover:text-[#2563EB] transition-colors">
                           {item.ticker}
                         </span>
-                        <span className="text-[11px] font-mono text-slate-500 bg-slate-800/60 px-1.5 py-0.5 rounded">
+                        <span className="text-[11px] font-mono text-slate-600 bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
                           {item.country || 'GLOBAL'}
                         </span>
                       </div>
-                      <div className="text-xs text-slate-400 line-clamp-1">
+                      <div className="text-xs text-slate-500 line-clamp-1">
                         {item.name}
                       </div>
                     </div>
@@ -190,7 +190,7 @@ export default function SearchModal({ isOpen, onClose, onSelectTicker }) {
                     <span className="text-xs font-mono text-slate-500 hidden sm:inline-block">
                       {item.sector || 'Equities'}
                     </span>
-                    <div className="w-7 h-7 rounded-md bg-slate-800/60 flex items-center justify-center text-slate-400 group-hover:text-[#2962FF] group-hover:bg-[#2962FF]/10 transition-colors">
+                    <div className="w-7 h-7 rounded-md bg-slate-100 flex items-center justify-center text-slate-500 group-hover:text-[#2563EB] group-hover:bg-[#2563EB]/10 transition-colors">
                       <CornerDownLeft className="w-3.5 h-3.5" />
                     </div>
                   </div>
@@ -201,11 +201,11 @@ export default function SearchModal({ isOpen, onClose, onSelectTicker }) {
         </div>
 
         {/* Footer Hotkeys Reference */}
-        <div className="p-2.5 sm:p-3 bg-[#161B26] border-t border-slate-800 flex items-center justify-between text-[11px] font-mono text-slate-500">
+        <div className="p-2.5 sm:p-3 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-[11px] font-mono text-slate-500">
           <div className="flex items-center gap-3">
-            <span><strong className="text-slate-400">↑↓</strong> Navigate</span>
-            <span><strong className="text-slate-400">↵</strong> Select</span>
-            <span><strong className="text-slate-400">ESC</strong> Close</span>
+            <span><strong className="text-slate-700">↑↓</strong> Navigate</span>
+            <span><strong className="text-slate-700">↵</strong> Select</span>
+            <span><strong className="text-slate-700">ESC</strong> Close</span>
           </div>
           <span className="hidden sm:inline-block text-slate-500">
             Real-time Algorithmic Search Across Top 10 Markets

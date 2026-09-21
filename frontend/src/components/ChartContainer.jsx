@@ -24,11 +24,11 @@ const TIMEFRAMES = [
 ];
 
 export const DRAWING_PRESETS = [
-  { id: 'demand', label: 'Demand / Support', hex: '#00D09C', bg: 'rgba(0, 208, 156, 0.18)', border: '#00D09C' },
-  { id: 'supply', label: 'Supply / Resistance', hex: '#EB5B5B', bg: 'rgba(235, 91, 91, 0.18)', border: '#EB5B5B' },
-  { id: 'channel', label: 'Consolidation / Channel', hex: '#2962FF', bg: 'rgba(41, 98, 255, 0.18)', border: '#2962FF' },
-  { id: 'liquidity', label: 'Order Block / Liquidity', hex: '#F59E0B', bg: 'rgba(245, 158, 11, 0.18)', border: '#F59E0B' },
-  { id: 'target', label: 'Target / Breakout Zone', hex: '#8B5CF6', bg: 'rgba(139, 92, 246, 0.18)', border: '#8B5CF6' },
+  { id: 'demand', label: 'Demand / Support', hex: '#16A34A', bg: 'rgba(22, 163, 74, 0.18)', border: '#16A34A' },
+  { id: 'supply', label: 'Supply / Resistance', hex: '#DC2626', bg: 'rgba(220, 38, 38, 0.18)', border: '#DC2626' },
+  { id: 'channel', label: 'Consolidation / Channel', hex: '#2563EB', bg: 'rgba(37, 99, 235, 0.18)', border: '#2563EB' },
+  { id: 'liquidity', label: 'Order Block / Liquidity', hex: '#D97706', bg: 'rgba(217, 119, 6, 0.18)', border: '#D97706' },
+  { id: 'target', label: 'Target / Breakout Zone', hex: '#0284C7', bg: 'rgba(2, 132, 199, 0.18)', border: '#0284C7' },
 ];
 
 export default function ChartContainer({
@@ -183,14 +183,14 @@ export default function ChartContainer({
     const getX = (idx) => padding.left + (idx / Math.max(candles.length - 1, 1)) * chartWidth;
     const candleWidth = Math.max((chartWidth / candles.length) * 0.65, 2.5);
 
-    // Exact Theme Palette
-    const COLOR_UP = isDark ? '#00D09C' : '#2563EB'; // Green (Dark) or Blue (Light)
-    const COLOR_DOWN = isDark ? '#EB5B5B' : '#DC2626'; // Red
-    const COLOR_SMA20 = '#F59E0B'; // Amber
-    const COLOR_SMA50 = '#8B5CF6'; // Violet
-    const COLOR_BOLLINGER = '#2962FF'; // Royal Blue
-    const GRID_COLOR = isDark ? 'rgba(38, 38, 38, 0.7)' : 'rgba(229, 231, 235, 0.8)';
-    const TEXT_COLOR = isDark ? '#9CA3AF' : '#047857';
+    // Option C Theme Palette
+    const COLOR_UP = '#16A34A'; // Green for bull candles
+    const COLOR_DOWN = '#DC2626'; // Red for bear candles
+    const COLOR_SMA20 = '#D97706'; // Amber
+    const COLOR_SMA50 = '#64748B'; // Slate
+    const COLOR_BOLLINGER = '#2563EB'; // Slate Blue Accent
+    const GRID_COLOR = isDark ? 'rgba(51, 65, 85, 0.4)' : 'rgba(229, 231, 235, 0.8)';
+    const TEXT_COLOR = isDark ? '#94A3B8' : '#64748B';
 
     // 1. Draw Grid Lines & Price Ticks
     ctx.strokeStyle = GRID_COLOR;
@@ -307,11 +307,7 @@ export default function ChartContainer({
         ctx.fillRect(x - candleWidth / 2, bodyTop, candleWidth, bodyHeight);
       });
     } else {
-      // Area Chart
-      const gradient = ctx.createLinearGradient(0, padding.top, 0, padding.top + priceHeight);
-      gradient.addColorStop(0, isDark ? 'rgba(0, 208, 156, 0.25)' : 'rgba(37, 99, 235, 0.25)');
-      gradient.addColorStop(1, 'rgba(0, 0, 0, 0.0)');
-
+      // Area Chart (Flat solid fill, no gradient)
       ctx.beginPath();
       ctx.moveTo(getX(0), getY(candles[0].close));
       for (let i = 1; i < candles.length; i++) {
@@ -320,7 +316,7 @@ export default function ChartContainer({
       ctx.lineTo(getX(candles.length - 1), padding.top + priceHeight);
       ctx.lineTo(getX(0), padding.top + priceHeight);
       ctx.closePath();
-      ctx.fillStyle = gradient;
+      ctx.fillStyle = 'rgba(37, 99, 235, 0.08)';
       ctx.fill();
 
       // Area stroke line
@@ -733,10 +729,10 @@ export default function ChartContainer({
   const activeCandle = hoveredIndex !== null && candles[hoveredIndex] ? candles[hoveredIndex] : candles[candles.length - 1];
 
   return (
-    <div className="p-4 sm:p-5 rounded-lg border border-slate-800 light:border-slate-200 bg-[#0C0D0E] light:bg-white shadow-sm flex flex-col gap-3 transition-colors">
+    <div className="p-4 sm:p-5 rounded-lg border border-slate-200 bg-white shadow-sm flex flex-col gap-3 transition-colors">
       
       {/* 1. Main Chart Toolbar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2.5 border-b border-slate-800/80 light:border-slate-200">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pb-2.5 border-b border-slate-200">
         
         {/* Timeframe Buttons */}
         <div className="flex items-center gap-1 overflow-x-auto no-scrollbar">
@@ -746,8 +742,8 @@ export default function ChartContainer({
               onClick={() => onTimeframeChange(tf.value)}
               className={`px-2.5 py-1 rounded-md text-xs font-mono font-bold transition-all cursor-pointer ${
                 timeframe === tf.value
-                  ? 'bg-[#2962FF] text-white shadow-sm'
-                  : 'text-slate-400 light:text-slate-600 hover:text-white light:hover:text-[#047857] hover:bg-slate-800 light:hover:bg-slate-100'
+                  ? 'bg-[#2563EB] text-white shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
               {tf.label}
@@ -759,14 +755,14 @@ export default function ChartContainer({
         <div className="flex items-center gap-1.5 flex-wrap">
           
           {/* Chart Type Toggle */}
-          <div className="flex items-center bg-[#141517] light:bg-slate-100 p-0.5 rounded-md border border-slate-800 light:border-slate-300">
+          <div className="flex items-center bg-slate-100 p-0.5 rounded-md border border-slate-200">
             <button
               onClick={() => setChartType('candlestick')}
               title="Candlestick Chart"
               className={`p-1 rounded transition-all cursor-pointer ${
                 chartType === 'candlestick'
-                  ? 'bg-[#2962FF] text-white shadow-sm'
-                  : 'text-slate-400 light:text-slate-600 hover:text-white'
+                  ? 'bg-[#2563EB] text-white shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <BarChart3 className="w-3.5 h-3.5" />
@@ -776,8 +772,8 @@ export default function ChartContainer({
               title="Area Line Chart"
               className={`p-1 rounded transition-all cursor-pointer ${
                 chartType === 'area'
-                  ? 'bg-[#2962FF] text-white shadow-sm'
-                  : 'text-slate-400 light:text-slate-600 hover:text-white'
+                  ? 'bg-[#2563EB] text-white shadow-sm'
+                  : 'text-slate-600 hover:text-slate-900'
               }`}
             >
               <LineChart className="w-3.5 h-3.5" />
@@ -789,11 +785,11 @@ export default function ChartContainer({
             onClick={() => setShowSMA20(!showSMA20)}
             className={`flex items-center gap-1.5 px-2 py-1 rounded-md border text-xs font-mono transition-all cursor-pointer ${
               showSMA20
-                ? 'bg-[#F59E0B]/15 text-[#F59E0B] border-[#F59E0B]/30 font-bold'
-                : 'bg-[#141517] light:bg-slate-100 text-slate-400 light:text-slate-600 border-slate-800 light:border-slate-300'
+                ? 'bg-[#D97706]/15 text-[#D97706] border-[#D97706]/30 font-bold'
+                : 'bg-slate-100 text-slate-600 border-slate-200'
             }`}
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-[#F59E0B]" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#D97706]" />
             SMA 20
           </button>
 
@@ -801,11 +797,11 @@ export default function ChartContainer({
             onClick={() => setShowSMA50(!showSMA50)}
             className={`flex items-center gap-1.5 px-2 py-1 rounded-md border text-xs font-mono transition-all cursor-pointer ${
               showSMA50
-                ? 'bg-[#8B5CF6]/15 text-[#8B5CF6] border-[#8B5CF6]/30 font-bold'
-                : 'bg-[#141517] light:bg-slate-100 text-slate-400 light:text-slate-600 border-slate-800 light:border-slate-300'
+                ? 'bg-slate-200 text-slate-800 border-slate-300 font-bold'
+                : 'bg-slate-100 text-slate-600 border-slate-200'
             }`}
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-[#8B5CF6]" />
+            <span className="w-1.5 h-1.5 rounded-full bg-slate-600" />
             SMA 50
           </button>
 
@@ -813,11 +809,11 @@ export default function ChartContainer({
             onClick={() => setShowBollinger(!showBollinger)}
             className={`flex items-center gap-1.5 px-2 py-1 rounded-md border text-xs font-mono transition-all cursor-pointer ${
               showBollinger
-                ? 'bg-[#2962FF]/15 text-[#2962FF] border-[#2962FF]/30 font-bold'
-                : 'bg-[#141517] light:bg-slate-100 text-slate-400 light:text-slate-600 border-slate-800 light:border-slate-300'
+                ? 'bg-[#2563EB]/10 text-[#2563EB] border-[#2563EB]/30 font-bold'
+                : 'bg-slate-100 text-slate-600 border-slate-200'
             }`}
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-[#2962FF]" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#2563EB]" />
             Bollinger (20,2)
           </button>
 
@@ -827,14 +823,14 @@ export default function ChartContainer({
             title="Draw Rectangle / Support & Resistance Zones (Click & Drag)"
             className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md border text-xs font-mono font-bold transition-all cursor-pointer shadow-sm ${
               isDrawMode
-                ? 'bg-[#2962FF] text-white border-[#2962FF] ring-2 ring-[#2962FF]/40'
-                : 'bg-[#141517] light:bg-slate-100 text-slate-300 light:text-slate-700 border-slate-700/80 light:border-slate-300 hover:border-[#2962FF]'
+                ? 'bg-[#2563EB] text-white border-[#2563EB] ring-2 ring-[#2563EB]/30'
+                : 'bg-slate-100 text-slate-700 border-slate-200 hover:border-[#2563EB]'
             }`}
           >
             <Square className="w-3.5 h-3.5" />
             <span>Draw Square</span>
             {boxes.length > 0 && (
-              <span className={`text-[10px] px-1 rounded font-mono ${isDrawMode ? 'bg-white/20 text-white' : 'bg-slate-800 text-slate-300'}`}>
+              <span className={`text-[10px] px-1 rounded font-mono ${isDrawMode ? 'bg-white/20 text-white' : 'bg-slate-200 text-slate-700'}`}>
                 {boxes.length}
               </span>
             )}
@@ -845,11 +841,11 @@ export default function ChartContainer({
 
       {/* 2. Drawing Sub-Toolbar (When Draw Mode is Active or Drawings Exist) */}
       {(isDrawMode || boxes.length > 0) && (
-        <div className="flex items-center justify-between gap-2 p-2 rounded-md bg-[#141517] light:bg-slate-100 border border-slate-800 light:border-slate-300 flex-wrap text-xs font-mono">
+        <div className="flex items-center justify-between gap-2 p-2 rounded-md bg-slate-50 border border-slate-200 flex-wrap text-xs font-mono">
           
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-[11px] uppercase font-bold text-slate-400 light:text-slate-600 flex items-center gap-1">
-              <Square className="w-3 h-3 text-[#2962FF]" />
+            <span className="text-[11px] uppercase font-bold text-slate-600 flex items-center gap-1">
+              <Square className="w-3 h-3 text-[#2563EB]" />
               <span>Zone Type:</span>
             </span>
 
@@ -864,8 +860,8 @@ export default function ChartContainer({
                   }}
                   className={`px-2 py-0.5 rounded text-[11px] font-bold font-mono transition-all flex items-center gap-1.5 cursor-pointer border ${
                     selectedPreset.id === p.id && isDrawMode
-                      ? 'border-white text-white shadow-sm'
-                      : 'border-transparent text-slate-400 hover:text-slate-200'
+                      ? 'border-slate-800 text-white shadow-sm'
+                      : 'border-transparent text-slate-600 hover:text-slate-900'
                   }`}
                   style={{
                     backgroundColor: selectedPreset.id === p.id && isDrawMode ? p.hex : 'transparent'
@@ -883,7 +879,7 @@ export default function ChartContainer({
             {selectedBoxId && (
               <button
                 onClick={handleDeleteSelected}
-                className="px-2 py-0.5 rounded bg-red-500/15 hover:bg-red-500/25 text-red-400 border border-red-500/30 text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                className="px-2 py-0.5 rounded bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer"
                 title="Delete Selected Square (Delete Key)"
               >
                 <Trash2 className="w-3 h-3" />
@@ -895,7 +891,7 @@ export default function ChartContainer({
               <>
                 <button
                   onClick={handleUndo}
-                  className="px-2 py-0.5 rounded bg-[#161B26] hover:bg-slate-800 text-slate-300 border border-slate-700 text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                  className="px-2 py-0.5 rounded bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-[11px] font-bold flex items-center gap-1 transition-colors cursor-pointer shadow-sm"
                   title="Undo Last Square (Ctrl+Z)"
                 >
                   <RotateCcw className="w-3 h-3" />
@@ -903,7 +899,7 @@ export default function ChartContainer({
                 </button>
                 <button
                   onClick={handleClearAll}
-                  className="px-2 py-0.5 rounded bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-red-400 text-[11px] font-bold transition-colors cursor-pointer"
+                  className="px-2 py-0.5 rounded bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-red-600 text-[11px] font-bold transition-colors cursor-pointer"
                   title="Clear all drawn zones on this chart"
                 >
                   Clear ({boxes.length})
@@ -914,7 +910,7 @@ export default function ChartContainer({
             {isDrawMode && (
               <button
                 onClick={() => setIsDrawMode(false)}
-                className="p-1 rounded text-slate-400 hover:text-white transition-colors cursor-pointer"
+                className="p-1 rounded text-slate-400 hover:text-slate-700 transition-colors cursor-pointer"
                 title="Exit Draw Mode (ESC)"
               >
                 <X className="w-3.5 h-3.5" />
@@ -927,12 +923,12 @@ export default function ChartContainer({
 
       {/* 3. Floating Tooltip Header */}
       {activeCandle && (
-        <div className="flex items-center justify-between gap-2 flex-wrap text-xs font-mono bg-[#141517] light:bg-slate-100 px-3 py-1.5 rounded-md border border-slate-800 light:border-slate-300 text-slate-300 light:text-slate-800">
+        <div className="flex items-center justify-between gap-2 flex-wrap text-xs font-mono bg-slate-50 px-3 py-1.5 rounded-md border border-slate-200 text-slate-700">
           <div className="flex items-center gap-3 flex-wrap">
-            <span className="text-slate-400 light:text-slate-500 font-semibold">{activeCandle.time}</span>
-            <div>O: <span className="text-white light:text-slate-900 font-bold tabular-nums">{currencySymbol}{activeCandle.open?.toFixed(2)}</span></div>
-            <div>H: <span className="text-white light:text-slate-900 font-bold tabular-nums">{currencySymbol}{activeCandle.high?.toFixed(2)}</span></div>
-            <div>L: <span className="text-white light:text-slate-900 font-bold tabular-nums">{currencySymbol}{activeCandle.low?.toFixed(2)}</span></div>
+            <span className="text-slate-500 font-semibold">{activeCandle.time}</span>
+            <div>O: <span className="text-slate-900 font-bold tabular-nums">{currencySymbol}{activeCandle.open?.toFixed(2)}</span></div>
+            <div>H: <span className="text-slate-900 font-bold tabular-nums">{currencySymbol}{activeCandle.high?.toFixed(2)}</span></div>
+            <div>L: <span className="text-slate-900 font-bold tabular-nums">{currencySymbol}{activeCandle.low?.toFixed(2)}</span></div>
             <div>
               C:{' '}
               <span
@@ -943,11 +939,11 @@ export default function ChartContainer({
                 {currencySymbol}{activeCandle.close?.toFixed(2)}
               </span>
             </div>
-            <div>Vol: <span className="text-slate-400 light:text-slate-500 font-semibold tabular-nums">{activeCandle.volume?.toLocaleString()}</span></div>
+            <div>Vol: <span className="text-slate-500 font-semibold tabular-nums">{activeCandle.volume?.toLocaleString()}</span></div>
           </div>
 
           {isDrawMode && (
-            <span className="text-[11px] font-mono text-[#2962FF] bg-[#2962FF]/15 px-2 py-0.5 rounded border border-[#2962FF]/30 animate-pulse font-bold hidden sm:inline-block">
+            <span className="text-[11px] font-mono text-[#2563EB] bg-[#2563EB]/10 px-2 py-0.5 rounded border border-[#2563EB]/25 font-bold hidden sm:inline-block">
               Click & drag across chart to draw {selectedPreset.label}
             </span>
           )}

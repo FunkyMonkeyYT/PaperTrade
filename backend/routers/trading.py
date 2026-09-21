@@ -27,7 +27,7 @@ def get_portfolio(
         return TradingEngine.get_portfolio_summary(db, user_id=user.id)
     except Exception as e:
         logger.error(f"Error fetching portfolio summary for user {user.username} (id: {user.id}): {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Failed to fetch portfolio: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to fetch portfolio.")
 
 @router.post("/order", response_model=OrderResponse)
 def execute_order(
@@ -45,7 +45,7 @@ def execute_order(
         raise
     except Exception as e:
         logger.error(f"Order execution error for {order.ticker} (user: {user.username}): {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Order execution failed: {str(e)}")
+        raise HTTPException(status_code=500, detail="Order execution failed.")
 
 @router.get("/transactions", response_model=List[TransactionItem])
 def get_transactions(
@@ -58,7 +58,7 @@ def get_transactions(
         return TradingEngine.get_transaction_history(db, user_id=user.id, limit=limit)
     except Exception as e:
         logger.error(f"Error fetching transaction history for user {user.username}: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Failed to fetch transactions: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to fetch transactions.")
 
 @router.post("/reset")
 def reset_portfolio(
@@ -70,7 +70,7 @@ def reset_portfolio(
         return TradingEngine.reset_portfolio(db, user_id=user.id)
     except Exception as e:
         logger.error(f"Error resetting portfolio for user {user.username}: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Failed to reset portfolio: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to reset portfolio.")
 
 @router.post("/switch-currency", response_model=PortfolioSummary)
 def switch_currency(
@@ -84,4 +84,4 @@ def switch_currency(
         return TradingEngine.get_portfolio_summary(db, user_id=user.id)
     except Exception as e:
         logger.error(f"Error converting portfolio currency to {currency} for user {user.username}: {e}", exc_info=True)
-        raise HTTPException(status_code=500, detail=f"Failed to switch currency: {str(e)}")
+        raise HTTPException(status_code=500, detail="Failed to switch currency.")

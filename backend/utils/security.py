@@ -6,8 +6,14 @@ import json
 import time
 from typing import Optional, Dict, Any
 
-# Secret key for JWT signature (can be overridden via environment variable)
-SECRET_KEY = os.getenv("APP_SECRET_KEY", "papertrade_quant_engine_jwt_secure_key_2026_x79")
+# Secret key for JWT signature — MUST be set via environment variable
+SECRET_KEY = os.getenv("APP_SECRET_KEY")
+if not SECRET_KEY:
+    raise RuntimeError(
+        "FATAL: APP_SECRET_KEY environment variable is not set. "
+        "Generate one with: python -c \"import secrets; print(secrets.token_urlsafe(48))\" "
+        "and add it to backend/.env"
+    )
 DEFAULT_TOKEN_EXPIRY_SECONDS = 30 * 24 * 3600  # 30 days default session
 
 def hash_password(password: str) -> str:

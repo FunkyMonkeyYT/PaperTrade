@@ -36,8 +36,12 @@ venv.bak/
 *.sqlite
 *.sqlite3
 *.db
+*.db-shm
+*.db-wal
 trading_simulator.db
 backend/trading_simulator.db
+yfinance.cache/
+*.cache
 
 # Testing & Coverage
 .pytest_cache/
