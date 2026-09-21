@@ -6,6 +6,8 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
+from limits import strategies, parse
+from limits.storage import MemoryStorage
 
 from database import engine, Base, init_db
 from routers.health import router as health_router
@@ -46,6 +48,34 @@ origins = [
     "http://localhost:3000",  # React default local frontend port
     "https://*.vercel.app",   # Any Vercel deployment preview
 ]
+
+# Rate Limiting Configuration
+rate_limit_storage = MemoryStorage()
+rate_limit_strategy = strategies.FixedWindowRateLimiter(rate_limit_storage)
+global_rate_limit = parse("200/minute")
+auth_rate_limit = parse("5/minute")
+
+@app.middleware("http")
+async def rate_limit_middleware(request: Request, call_next):
+    ip = request.client.host if request.client else "127.0.0.1"
+    path = request.url.path
+    
+    # Stricter rate limits for authentication endpoints
+    if path.startswith("/api/auth/login") or path.startswith("/api/auth/register"):
+        if not rate_limit_strategy.hit(auth_rate_limit, ip, path):
+            return JSONResponse(
+                status_code=429, 
+                content={"detail": "Too many authentication attempts. Please try again later."}
+            )
+    else:
+        # Global rate limit for all other endpoints
+        if not rate_limit_strategy.hit(global_rate_limit, ip, "global"):
+            return JSONResponse(
+                status_code=429, 
+                content={"detail": "Rate limit exceeded. Too many requests."}
+            )
+            
+    return await call_next(request)
 
 app.add_middleware(
     CORSMiddleware,
