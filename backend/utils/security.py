@@ -5,6 +5,10 @@ import base64
 import json
 import time
 from typing import Optional, Dict, Any
+from dotenv import load_dotenv
+
+# Load .env before reading any environment variables
+load_dotenv()
 
 # Secret key for JWT signature — MUST be set via environment variable
 SECRET_KEY = os.getenv("APP_SECRET_KEY")
